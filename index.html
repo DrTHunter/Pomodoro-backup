@@ -66,6 +66,46 @@
             100% { transform: scale(1); }
         }
 
+        .animal-side {
+            position: fixed;
+            top: 45%;
+            transform: translateY(-50%);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .animal-left { 
+            left: 10px;
+            animation: floatLeft 15s ease-in-out infinite alternate;
+        }
+
+        .animal-right { 
+            right: 10px;
+            animation: floatRight 15s ease-in-out infinite alternate;
+        }
+
+        .animal-gif {
+            width: 160px;
+            height: auto;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+            animation: float 4s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(3deg); }
+        }
+
+        @keyframes floatLeft {
+            0% { transform: translateY(-50%) translateX(0); }
+            100% { transform: translateY(-50%) translateX(20px); }
+        }
+
+        @keyframes floatRight {
+            0% { transform: translateY(-50%) translateX(0); }
+            100% { transform: translateY(-50%) translateX(-20px); }
+        }
+
         .container {
             background-color: rgba(255, 255, 255, 0.9);
             border-radius: 20px;
@@ -77,7 +117,6 @@
             backdrop-filter: blur(5px);
             position: relative;
             z-index: 2;
-            transition: background-color 0.3s ease;
         }
 
         h1 {
@@ -113,7 +152,7 @@
             left: 50%;
             transform: translate(-50%, -50%);
             z-index: 2;
-            transition: none;
+            transition: none; /* Remove transition to prevent movement during celebration */
             width: 100%;
             text-align: center;
         }
@@ -166,7 +205,6 @@
         #start { background-color: var(--primary-green); color: white; }
         #stop { background-color: #f44336; color: white; display: none; }
         #reset { background-color: var(--primary-blue); color: white; }
-        #pause { background-color: var(--primary-orange); color: white; display: none; }
 
         .quick-buttons {
             display: flex;
@@ -194,7 +232,6 @@
             background-color: rgba(255, 255, 255, 0.7);
             padding: 15px;
             border-radius: 10px;
-            transition: background-color 0.3s ease;
         }
 
         .stats {
@@ -209,7 +246,6 @@
             border-radius: 8px;
             min-width: 120px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            transition: background-color 0.3s ease;
         }
 
         .stat-box div:first-child {
@@ -240,7 +276,6 @@
             padding: 15px;
             border-radius: 10px;
             min-height: 200px;
-            transition: background-color 0.3s ease;
         }
 
         .notes-column h3 {
@@ -267,9 +302,6 @@
             resize: vertical;
             font-family: inherit;
             margin-bottom: 10px;
-            background-color: white;
-            color: #333;
-            transition: background-color 0.3s ease, border-color 0.3s ease;
         }
 
         .note-list {
@@ -279,7 +311,6 @@
             padding: 10px;
             background-color: rgba(255, 255, 255, 0.8);
             border-radius: 8px;
-            transition: background-color 0.3s ease;
         }
 
         .note-item {
@@ -289,7 +320,6 @@
             background-color: white;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             position: relative;
-            transition: background-color 0.3s ease;
         }
 
         .work-note { border-left: 4px solid var(--primary-pink); }
@@ -317,7 +347,6 @@
             border-radius: 4px;
             background-color: #f5f5f5;
             border: 1px solid #ddd;
-            transition: background-color 0.3s ease;
         }
 
         .note-action-btn:hover { background-color: #e0e0e0; }
@@ -349,74 +378,6 @@
 
         .work-mode { background-color: var(--work-bg); color: var(--work-text); }
         .break-mode { background-color: var(--break-bg); color: var(--break-text); }
-
-        /* Task management styles */
-        .task-management {
-            margin: 20px 0;
-            padding: 15px;
-            background-color: rgba(255, 255, 255, 0.7);
-            border-radius: 10px;
-            transition: background-color 0.3s ease;
-        }
-
-        .task-list {
-            max-height: 200px;
-            overflow-y: auto;
-            margin-top: 10px;
-            text-align: left;
-        }
-
-        .task-item {
-            padding: 10px;
-            margin-bottom: 8px;
-            background-color: white;
-            border-radius: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            transition: background-color 0.3s ease;
-        }
-
-        .task-info {
-            flex: 1;
-        }
-
-        .task-name {
-            font-weight: bold;
-        }
-
-        .task-time {
-            font-size: 0.9em;
-            color: #666;
-        }
-
-        .task-actions {
-            display: flex;
-            gap: 5px;
-        }
-
-        .task-btn {
-            padding: 5px 10px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.8em;
-        }
-
-        .start-task-btn {
-            background-color: var(--primary-green);
-            color: white;
-        }
-
-        .delete-task-btn {
-            background-color: #f44336;
-            color: white;
-        }
-
-        .active-task {
-            border-left: 4px solid var(--primary-blue);
-        }
 
         /* Top right dropdown menu */
         .dropdown-menu {
@@ -454,7 +415,6 @@
             box-shadow: 0 8px 16px rgba(0,0,0,0.2);
             border-radius: 10px;
             z-index: 101;
-            transition: background-color 0.3s ease;
         }
 
         .dropdown-content.show {
@@ -492,7 +452,6 @@
             z-index: 101;
             right: 20px;
             width: 350px;
-            transition: background-color 0.3s ease;
         }
 
         .panel.show { 
@@ -501,13 +460,163 @@
             height: auto;
         }
 
+        .info-panel {
+            top: 90px;
+            left: 20px;
+            width: 350px;
+            max-height: 80vh;
+            right: auto;
+            bottom: auto;
+        }
+
+        .info-panel h3 {
+            color: var(--accent-purple);
+            margin-top: 0;
+        }
+
+        .info-panel p {
+            text-align: left;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+        }
+
+        .info-panel ul {
+            text-align: left;
+            padding-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        .productivity-panel {
+            top: 90px;
+            left: 20px;
+            width: 350px;
+            max-height: 80vh;
+            display: none;
+            right: auto;
+            bottom: auto;
+        }
+
+        .productivity-panel h3 {
+            color: var(--accent-purple);
+            margin-top: 0;
+        }
+
+        .productivity-panel p {
+            text-align: left;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+        }
+
+        .productivity-panel ul {
+            text-align: left;
+            padding-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        .close-panel-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: none;
+            border: none;
+            font-size: 1.2em;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .noise-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .noise-play-btn {
+            background-color: var(--accent-purple);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        .noise-option {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .noise-option:hover { background-color: #f5f5f5; }
+        .noise-option.active { background-color: #e1bee7; }
+
+        .noise-option input {
+            margin-right: 10px;
+            width: auto;
+        }
+
+        .noise-option label { flex: 1; cursor: pointer; }
+
+        .volume-control { width: 100%; margin-top: 10px; }
+
+        .lofi-channel {
+            display: block;
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            background-color: #f5f5f5;
+            color: #333;
+            text-decoration: none;
+            transition: background-color 0.2s;
+        }
+
+        .lofi-channel:hover { background-color: #e0e0e0; }
+
+        .lofi-channel img {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+
+        .donate-btn {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background-color: #ff5722;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 100;
+            transition: all 0.3s;
+            text-decoration: none;
+            font-size: 1em;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .donate-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+            background-color: #ff7043;
+        }
+
         .history-item {
             padding: 10px;
             margin-bottom: 10px;
             border-radius: 8px;
             background-color: #f9f9f9;
             border-left: 4px solid var(--primary-purple);
-            transition: background-color 0.3s ease;
         }
 
         .history-header {
@@ -541,7 +650,6 @@
             padding: 5px;
             background-color: white;
             border-radius: 4px;
-            transition: background-color 0.3s ease;
         }
 
         .history-actions {
@@ -557,7 +665,6 @@
             border-radius: 4px;
             background-color: #f5f5f5;
             border: 1px solid #ddd;
-            transition: background-color 0.3s ease;
         }
 
         .history-action-btn:hover { background-color: #e0e0e0; }
@@ -582,153 +689,18 @@
             margin-top: 10px;
         }
 
-        .close-panel-btn {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background: none;
-            border: none;
-            font-size: 1.2em;
-            cursor: pointer;
-            color: #666;
+        .editable {
+            border: 1px dashed #ccc;
+            padding: 2px;
+            min-height: 1em;
         }
 
-        /* Calendar styles */
-        .calendar-panel {
-            position: fixed;
-            background-color: white;
-            border-radius: 15px;
-            padding: 15px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            display: none;
-            max-height: 80vh;
-            overflow-y: auto;
-            z-index: 101;
-            width: 350px;
-            left: 50%;
-            transform: translateX(-50%);
-            transition: background-color 0.3s ease;
+        .editable:focus {
+            outline: none;
+            border: 1px solid var(--primary-blue);
+            background-color: #f5f9ff;
         }
 
-        .calendar-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .calendar-title {
-            font-size: 1.2em;
-            font-weight: bold;
-            color: var(--accent-purple);
-        }
-
-        .calendar-nav {
-            display: flex;
-            gap: 10px;
-            margin-left: 20px;
-        }
-
-        .calendar-nav button {
-            background: none;
-            border: none;
-            font-size: 1.2em;
-            cursor: pointer;
-            color: var(--accent-purple);
-        }
-
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 5px;
-        }
-
-        .calendar-day-header {
-            text-align: center;
-            font-weight: bold;
-            padding: 5px;
-            color: var(--accent-purple);
-        }
-
-        .calendar-day {
-            text-align: center;
-            padding: 8px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        .calendar-day:hover {
-            background-color: #f0f0f0;
-        }
-
-        .calendar-day.empty {
-            visibility: hidden;
-        }
-
-        .calendar-day.today {
-            background-color: var(--accent-purple);
-            color: white;
-            font-weight: bold;
-        }
-
-        .calendar-day.has-sessions {
-            background-color: #e1bee7;
-            font-weight: bold;
-        }
-
-        .calendar-day.selected {
-            background-color: var(--primary-blue);
-            color: white;
-        }
-
-        .calendar-sessions {
-            margin-top: 15px;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        .calendar-session-item {
-            padding: 8px;
-            margin-bottom: 5px;
-            border-radius: 5px;
-            background-color: #f5f5f5;
-            transition: background-color 0.3s ease;
-        }
-
-        .calendar-session-item.work {
-            border-left: 3px solid var(--primary-pink);
-        }
-
-        .calendar-session-item.break {
-            border-left: 3px solid var(--primary-green);
-        }
-
-        .calendar-session-time {
-            font-size: 0.8em;
-            color: #666;
-        }
-
-        .calendar-session-duration {
-            font-weight: bold;
-        }
-
-        .calendar-session-notes {
-            margin-top: 3px;
-            font-size: 0.9em;
-        }
-
-        .calendar-export-btn {
-            background-color: var(--primary-blue);
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 5px;
-            margin-top: 10px;
-            cursor: pointer;
-        }
-
-        /* Reward styles */
         .reward-item {
             display: flex;
             align-items: center;
@@ -736,7 +708,6 @@
             margin-bottom: 10px;
             border-radius: 8px;
             background-color: #f9f9f9;
-            transition: background-color 0.3s ease;
         }
 
         .reward-icon {
@@ -786,6 +757,23 @@
             margin-left: 10px;
         }
 
+        .confetti-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            opacity: 0;
+        }
+
         .reward-tabs {
             display: flex;
             margin-bottom: 10px;
@@ -824,27 +812,184 @@
             color: white;
         }
 
-        /* Confetti styles */
-        .confetti-container {
+        .delete-history-btn {
+            background-color: #f44336;
+            color: white;
+        }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
+
+        @keyframes bigCelebration {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.5); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 0; }
+        }
+
+        .big-reward {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 10em;
+            z-index: 2000;
+            animation: bigCelebration 2s ease-out forwards;
+            pointer-events: none;
+        }
+
+        /* Calendar Page Styles */
+        .calendar-page {
+            display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            pointer-events: none;
+            background-color: white;
             z-index: 1000;
+            overflow-y: auto;
+            padding: 20px;
+            box-sizing: border-box;
         }
 
-        .confetti {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            opacity: 0;
+        .calendar-page.show {
+            display: block;
         }
 
-        /* Negative timer styling */
-        .negative-timer {
-            color: #f44336 !important;
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .calendar-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: var(--accent-purple);
+        }
+
+        .calendar-nav {
+            display: flex;
+            gap: 10px;
+        }
+
+        .calendar-nav button {
+            background: none;
+            border: none;
+            font-size: 1.2em;
+            cursor: pointer;
+            color: var(--accent-purple);
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+        }
+
+        .calendar-day-header {
+            text-align: center;
+            font-weight: bold;
+            padding: 10px;
+            color: var(--accent-purple);
+            background-color: #f5f5f5;
+            border-radius: 5px;
+        }
+
+        .calendar-day {
+            text-align: center;
+            padding: 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            border: 1px solid #eee;
+            transition: all 0.2s;
+        }
+
+        .calendar-day:hover {
+            background-color: #f0f0f0;
+        }
+
+        .calendar-day.empty {
+            visibility: hidden;
+        }
+
+        .calendar-day.today {
+            background-color: var(--accent-purple);
+            color: white;
+            font-weight: bold;
+        }
+
+        .calendar-day.has-sessions {
+            background-color: #e1bee7;
+            font-weight: bold;
+        }
+
+        .calendar-day.selected {
+            background-color: var(--primary-blue);
+            color: white;
+        }
+
+        .calendar-sessions {
+            margin-top: 30px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .calendar-session-item {
+            padding: 12px;
+            margin-bottom: 8px;
+            border-radius: 5px;
+            background-color: #f5f5f5;
+        }
+
+        .calendar-session-item.work {
+            border-left: 4px solid var(--primary-pink);
+        }
+
+        .calendar-session-item.break {
+            border-left: 4px solid var(--primary-green);
+        }
+
+        .calendar-session-time {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .calendar-session-duration {
+            font-weight: bold;
+        }
+
+        .calendar-session-notes {
+            margin-top: 5px;
+            font-size: 0.9em;
+        }
+
+        .calendar-export-btn {
+            background-color: var(--primary-blue);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            margin-top: 20px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+        .back-to-timer-btn {
+            background-color: var(--primary-purple);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            margin-top: 20px;
+            cursor: pointer;
+            font-size: 1em;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
         }
 
         /* Mobile responsiveness */
@@ -864,7 +1009,7 @@
                 top: 50px;
             }
             
-            .calendar-panel {
+            .info-panel, .productivity-panel {
                 left: 50%;
                 transform: translateX(-50%);
                 width: 90%;
@@ -889,9 +1034,41 @@
                 font-size: 0.9em;
             }
             
-            /* Remove close button from calendar panel */
-            #closeCalendarPanel {
-                display: none;
+            /* Center tab bubbles on mobile */
+            .reward-tabs {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+            
+            .reward-tab {
+                padding: 8px 10px;
+                font-size: 0.9em;
+            }
+            
+            /* Make rewards panel taller on desktop */
+            @media (min-width: 769px) {
+                #rewardsPanel {
+                    height: 500px;
+                }
+            }
+            
+            /* Show rewards on mobile */
+            @media (max-width: 768px) {
+                #rewardsPanel {
+                    max-height: 70vh;
+                    height: auto;
+                }
+            }
+
+            /* Calendar page adjustments for mobile */
+            .calendar-day {
+                padding: 8px;
+                font-size: 0.9em;
+            }
+            
+            .calendar-day-header {
+                padding: 8px;
+                font-size: 0.9em;
             }
         }
 
@@ -904,16 +1081,58 @@
                 transform: none;
             }
             
-            .calendar-panel {
-                top: 90px;
-                left: auto;
-                right: 20px;
-                transform: none;
+            .calendar-page {
+                padding: 40px;
             }
+            
+            .calendar-grid {
+                gap: 10px;
+            }
+        }
+
+        /* Negative timer styling */
+        .negative-timer {
+            color: #f44336 !important;
         }
     </style>
 </head>
 <body>
+    <!-- Pomodoro Timer Page -->
+    <div class="animal-side animal-left">
+        <img class="animal-gif" id="leftAnimalGif" src="assets/working-dog-animation.gif" alt="Working animal">
+    </div>
+
+    <!-- Top right dropdown menu -->
+    <div class="dropdown-menu">
+        <div class="dropdown-btn" id="dropdownBtn">☰</div>
+        <div class="dropdown-content" id="dropdownContent">
+            <div class="dropdown-item" id="infoMenuItem">
+                <i>ℹ️</i> Info
+            </div>
+            <div class="dropdown-item" id="productivityMenuItem">
+                <i>📈</i> Productivity
+            </div>
+            <div class="dropdown-item" id="noiseMenuItem">
+                <i>🎵</i> Background Sounds
+            </div>
+            <div class="dropdown-item" id="lofiMenuItem">
+                <i>🎧</i> LoFi Channels
+            </div>
+            <div class="dropdown-item" id="historyMenuItem">
+                <i>📊</i> Session History
+            </div>
+            <div class="dropdown-item" id="rewardsMenuItem">
+                <i>🏆</i> Rewards
+            </div>
+            <div class="dropdown-item" id="calendarMenuItem">
+                <i>📅</i> Calendar
+            </div>
+            <div class="dropdown-item" id="donateMenuItem">
+                <i>☕</i> Buy Creator a Coffee
+            </div>
+        </div>
+    </div>
+
     <div class="container">
         <h1>Pomodoro Timer</h1>
         
@@ -933,7 +1152,6 @@
         <div class="buttons">
             <button id="start">Start</button>
             <button id="stop">Stop</button>
-            <button id="pause">Pause</button>
             <button id="reset">Reset</button>
         </div>
         
@@ -942,32 +1160,22 @@
             <button class="quick-btn" id="break5">Break (5:00)</button>
             <button class="quick-btn" id="break30">Long Break (30:00)</button>
         </div>
-
-        <!-- Task Management Section -->
-        <div class="task-management">
-            <h2>Task Management</h2>
-            <div>
-                <input type="text" id="taskNameInput" placeholder="Task name">
-                <button id="addTaskBtn">Add Task</button>
-            </div>
-            <div class="task-list" id="taskList"></div>
-        </div>
         
         <div class="tracking">
             <h2>Tracking</h2>
             
             <div class="stats">
                 <div class="stat-box">
-                    <div>Pomodoros:</div>
-                    <div id="pomodoroCount">0</div>
+                    <div>Work Time:</div>
+                    <div id="totalWork">00:00:00</div>
                 </div>
                 <div class="stat-box">
-                    <div>Breaks:</div>
-                    <div id="breakCount">0</div>
+                    <div>Break Time:</div>
+                    <div id="totalBreak">00:00:00</div>
                 </div>
             </div>
             
-            <button id="resetTracking" class="reset-tracking-btn">Reset Tracking</button>
+            <button id="resetTracking" class="reset-tracking-btn">Reset Tracking Time</button>
             
             <div class="notes-container">
                 <div class="notes-column">
@@ -987,64 +1195,12 @@
         </div>
     </div>
 
-    <!-- Top right dropdown menu -->
-    <div class="dropdown-menu">
-        <div class="dropdown-btn" id="dropdownBtn">☰</div>
-        <div class="dropdown-content" id="dropdownContent">
-            <div class="dropdown-item" id="historyMenuItem">
-                <i>📊</i> Session History
-            </div>
-            <div class="dropdown-item" id="rewardsMenuItem">
-                <i>🏆</i> Rewards
-            </div>
-            <div class="dropdown-item" id="calendarMenuItem">
-                <i>📅</i> Calendar
-            </div>
-        </div>
+    <div class="animal-side animal-right">
+        <img class="animal-gif" id="rightAnimalGif" src="assets/working-dog-animation.gif" alt="Working animal">
     </div>
 
-    <!-- History Panel -->
-    <div class="panel" id="historyPanel">
-        <button class="close-panel-btn" id="closeHistoryPanel">×</button>
-        <h3 style="margin-top: 0; color: var(--accent-purple);">Session History</h3>
-        <div class="history-controls">
-            <button id="exportHistory" class="export-btn">Export History</button>
-            <button id="clearHistory" class="clear-history-btn">Clear History</button>
-        </div>
-        <div id="historyList"></div>
-    </div>
-
-    <!-- Rewards Panel -->
-    <div class="panel" id="rewardsPanel">
-        <button class="close-panel-btn" id="closeRewardsPanel">×</button>
-        <h3 style="margin-top: 0; color: var(--accent-purple);">Your Rewards</h3>
-        
-        <div class="reward-tabs">
-            <div class="reward-tab active" data-tab="daily">Daily</div>
-            <div class="reward-tab" data-tab="weekly">Weekly</div>
-            <div class="reward-tab" data-tab="monthly">Monthly</div>
-        </div>
-        
-        <div class="reward-tab-content active" id="dailyRewards">
-            <div id="dailyRewardsList"></div>
-        </div>
-        
-        <div class="reward-tab-content" id="weeklyRewards">
-            <div id="weeklyRewardsList"></div>
-        </div>
-        
-        <div class="reward-tab-content" id="monthlyRewards">
-            <div id="monthlyRewardsList"></div>
-        </div>
-        
-        <div class="reward-controls">
-            <button id="resetRewards" class="reset-rewards-btn">Reset Rewards</button>
-        </div>
-    </div>
-
-    <!-- Calendar Panel -->
-    <div class="panel calendar-panel" id="calendarPanel">
-        <button class="close-panel-btn" id="closeCalendarPanel">×</button>
+    <!-- Calendar Page -->
+    <div class="calendar-page" id="calendarPage">
         <div class="calendar-header">
             <div class="calendar-title" id="calendarTitle">March 2023</div>
             <div class="calendar-nav">
@@ -1071,6 +1227,165 @@
         </div>
         
         <button id="exportCalendarBtn" class="calendar-export-btn">Export Calendar Data</button>
+        <button id="backToTimerBtn" class="back-to-timer-btn">Back to Timer</button>
+    </div>
+
+    <!-- Productivity Info Panel -->
+    <div class="panel productivity-panel" id="productivityPanel">
+        <button class="close-panel-btn" id="closeProductivityPanel">×</button>
+        <h3>Why Track Productivity?</h3>
+        <p>Tracking your work time and accomplishments provides concrete data to demonstrate your value to your organization.</p>
+        
+        <h4>Benefits for Performance Reviews:</h4>
+        <ul>
+            <li><strong>Quantify your contributions</strong> with exact hours worked and tasks completed</li>
+            <li><strong>Show efficiency improvements</strong> over time with historical data</li>
+            <li><strong>Document your focus</strong> - time tracking shows dedication to important tasks</li>
+            <li><strong>Identify productivity patterns</strong> to optimize your work habits</li>
+        </ul>
+        
+        <h4>How to Present for Raises:</h4>
+        <ul>
+            <li><strong>Show consistent productivity</strong> with your tracked work hours</li>
+            <li><strong>Highlight completed projects</strong> from your notes with time invested</li>
+            <li><strong>Demonstrate work-life balance</strong> with proper break tracking</li>
+            <li><strong>Show initiative</strong> by presenting your self-tracking system</li>
+            <li><strong>Connect to business outcomes</strong> - link your time to measurable results</li>
+        </ul>
+        
+        <p>This data provides objective evidence to support your case for career advancement.</p>
+    </div>
+
+    <!-- Info Panel -->
+    <div class="panel info-panel" id="infoPanel">
+        <button class="close-panel-btn" id="closeInfoPanel">×</button>
+        <h3>About Pomodoro Technique</h3>
+        <p>The Pomodoro Technique is a time management method developed by Francesco Cirillo in the late 1980s.</p>
+        
+        <h4>How to Use This Timer:</h4>
+        <ol>
+            <li><strong>Choose a task</strong> to focus on</li>
+            <li><strong>Start the 25-minute timer</strong> (work session)</li>
+            <li>Work focused until the timer rings</li>
+            <li>Take a <strong>5-minute break</strong></li>
+            <li>After 4 work sessions, take a <strong>30-minute break</strong></li>
+            <li><strong>Change tasks periodically</strong> to ensure too much time isn't spent on one task</li>
+        </ol>
+        
+        <h4>Key Productivity Tips:</h4>
+        <ul>
+            <li>Switch tasks periodically to maintain fresh focus</li>
+            <li>Use work notes to track different tasks</li>
+            <li>During breaks, completely disengage from work</li>
+            <li>Adjust timer lengths based on task complexity</li>
+            <li>Use the 5-minute breaks to stretch and refresh</li>
+        </ul>
+    </div>
+
+    <!-- Noise Panel -->
+    <div class="panel" id="noisePanel">
+        <button class="close-panel-btn" id="closeNoisePanel">×</button>
+        <h3 style="margin-top: 0; color: var(--accent-purple);">Background Sounds</h3>
+        <div class="noise-controls">
+            <button class="noise-play-btn" id="noisePlayBtn">⏸️</button>
+            <span id="nowPlaying">No sound selected</span>
+        </div>
+        <div class="noise-option">
+            <input type="radio" id="noise1" name="backgroundNoise" value="rain">
+            <label for="noise1">Rainfall</label>
+        </div>
+        <div class="noise-option">
+            <input type="radio" id="noise2" name="backgroundNoise" value="forest">
+            <label for="noise2">Forest Sounds</label>
+        </div>
+        <div class="noise-option">
+            <input type="radio" id="noise3" name="backgroundNoise" value="waves">
+            <label for="noise3">Ocean Waves</label>
+        </div>
+        <div class="noise-option">
+            <input type="radio" id="noise4" name="backgroundNoise" value="birds">
+            <label for="noise4">Bird Songs</label>
+        </div>
+        <div class="noise-option">
+            <input type="radio" id="noise5" name="backgroundNoise" value="whitenoise">
+            <label for="noise5">White Noise</label>
+        </div>
+        <div class="noise-option">
+            <input type="radio" id="noise6" name="backgroundNoise" value="coffee">
+            <label for="noise6">Coffee Shop</label>
+        </div>
+        <div class="noise-option">
+            <input type="radio" id="noise7" name="backgroundNoise" value="none" checked>
+            <label for="noise7">None</label>
+        </div>
+        <input type="range" min="0" max="1" step="0.1" value="0.5" class="volume-control" id="volumeControl">
+        <div style="text-align: center; margin-top: 5px; font-size: 0.8em;">Volume</div>
+    </div>
+
+    <!-- LoFi Panel -->
+    <div class="panel" id="lofiPanel">
+        <button class="close-panel-btn" id="closeLofiPanel">×</button>
+        <h3 style="margin-top: 0; color: var(--accent-purple);">LoFi Channels</h3>
+        <a href="https://www.youtube.com/watch?v=jfKfPfyJRdk" target="_blank" class="lofi-channel">
+            <img src="https://i.ytimg.com/vi/jfKfPfyJRdk/hqdefault.jpg" alt="LoFi Girl">
+            LoFi Girl
+        </a>
+        <a href="https://www.youtube.com/watch?v=rUxyKA_-grg" target="_blank" class="lofi-channel">
+            <img src="https://i.ytimg.com/vi/rUxyKA_-grg/hqdefault.jpg" alt="Chillhop">
+            Chillhop Music
+        </a>
+        <a href="https://www.youtube.com/watch?v=4xDzrJKXOOY" target="_blank" class="lofi-channel">
+            <img src="https://i.ytimg.com/vi/4xDzrJKXOOY/hqdefault.jpg" alt="Ambient Worlds">
+            Ambient Worlds
+        </a>
+        <a href="https://www.youtube.com/watch?v=7NOSDKb0HlU" target="_blank" class="lofi-channel">
+            <img src="https://i.ytimg.com/vi/7NOSDKb0HlU/hqdefault.jpg" alt="Chill Cow">
+            Chill Cow
+        </a>
+    </div>
+
+    <!-- History Panel -->
+    <div class="panel" id="historyPanel">
+        <button class="close-panel-btn" id="closeHistoryPanel">×</button>
+        <h3 style="margin-top: 0; color: var(--accent-purple);">Session History</h3>
+        <div class="history-controls">
+            <button id="exportHistory" class="export-btn">Export History</button>
+            <button id="clearHistory" class="clear-history-btn">Clear History</button>
+        </div>
+        <div id="historyList"></div>
+    </div>
+
+    <!-- Rewards Panel -->
+    <div class="panel" id="rewardsPanel">
+        <button class="close-panel-btn" id="closeRewardsPanel">×</button>
+        <h3 style="margin-top: 0; color: var(--accent-purple);">Your Rewards</h3>
+        
+        <div class="reward-tabs">
+            <div class="reward-tab active" data-tab="daily">Daily</div>
+            <div class="reward-tab" data-tab="weekly">Weekly</div>
+            <div class="reward-tab" data-tab="monthly">Monthly</div>
+            <div class="reward-tab" data-tab="history">History</div>
+        </div>
+        
+        <div class="reward-tab-content active" id="dailyRewards">
+            <div id="dailyRewardsList"></div>
+        </div>
+        
+        <div class="reward-tab-content" id="weeklyRewards">
+            <div id="weeklyRewardsList"></div>
+        </div>
+        
+        <div class="reward-tab-content" id="monthlyRewards">
+            <div id="monthlyRewardsList"></div>
+        </div>
+        
+        <div class="reward-tab-content" id="historyRewards">
+            <div id="historyRewardsList"></div>
+        </div>
+        
+        <div class="reward-controls">
+            <button id="resetRewards" class="reset-rewards-btn">Reset Rewards</button>
+        </div>
     </div>
 
     <!-- Confetti Container -->
@@ -1078,7 +1393,12 @@
 
     <audio id="alarmSound" src="https://assets.mixkit.co/sfx/preview/mixkit-alarm-digital-clock-beep-989.mp3" preload="auto"></audio>
     <audio id="applauseSound" src="https://assets.mixkit.co/sfx/preview/mixkit-achievement-bell-600.mp3" preload="auto"></audio>
-    
+    <audio id="rainSound" loop src="https://assets.mixkit.co/sfx/preview/mixkit-rain-ambience-1193.mp3" preload="auto"></audio>
+    <audio id="forestSound" loop src="https://assets.mixkit.co/sfx/preview/mixkit-forest-ambience-1683.mp3" preload="auto"></audio>
+    <audio id="wavesSound" loop src="https://assets.mixkit.co/sfx/preview/mixkit-waves-coming-to-shore-1934.mp3" preload="auto"></audio>
+    <audio id="birdsSound" loop src="https://assets.mixkit.co/sfx/preview/mixkit-birds-chirping-near-the-river-2466.mp3" preload="auto"></audio>
+    <audio id="whiteNoiseSound" loop src="https://assets.mixkit.co/sfx/preview/mixkit-wind-ambience-594.mp3" preload="auto"></audio>
+    <audio id="coffeeSound" loop src="https://assets.mixkit.co/sfx/preview/mixkit-busy-coffee-shop-1655.mp3" preload="auto"></audio>
     <script>
         // ========== DOM Elements ==========
         const DOM = {
@@ -1087,14 +1407,13 @@
             startButton: document.getElementById('start'),
             stopButton: document.getElementById('stop'),
             resetButton: document.getElementById('reset'),
-            pauseButton: document.getElementById('pause'),
             work25Button: document.getElementById('work25'),
             break5Button: document.getElementById('break5'),
             break30Button: document.getElementById('break30'),
             setWorkModeButton: document.getElementById('setWorkMode'),
             setBreakModeButton: document.getElementById('setBreakMode'),
-            pomodoroCountDisplay: document.getElementById('pomodoroCount'),
-            breakCountDisplay: document.getElementById('breakCount'),
+            totalWorkDisplay: document.getElementById('totalWork'),
+            totalBreakDisplay: document.getElementById('totalBreak'),
             resetTracking: document.getElementById('resetTracking'),
             noteInput: document.getElementById('noteInput'),
             saveWorkNoteButton: document.getElementById('saveWorkNote'),
@@ -1105,50 +1424,83 @@
             alarmSound: document.getElementById('alarmSound'),
             applauseSound: document.getElementById('applauseSound'),
             modeIndicator: document.getElementById('modeIndicator'),
+            nowPlaying: document.getElementById('nowPlaying'),
+            volumeControl: document.getElementById('volumeControl'),
+            rainSound: document.getElementById('rainSound'),
+            forestSound: document.getElementById('forestSound'),
+            wavesSound: document.getElementById('wavesSound'),
+            birdsSound: document.getElementById('birdsSound'),
+            whiteNoiseSound: document.getElementById('whiteNoiseSound'),
+            coffeeSound: document.getElementById('coffeeSound'),
+            noiseOptions: document.querySelectorAll('.noise-option input'),
+            infoPanel: document.getElementById('infoPanel'),
             historyList: document.getElementById('historyList'),
             clearHistory: document.getElementById('clearHistory'),
             exportHistory: document.getElementById('exportHistory'),
             dailyRewardsList: document.getElementById('dailyRewardsList'),
             weeklyRewardsList: document.getElementById('weeklyRewardsList'),
             monthlyRewardsList: document.getElementById('monthlyRewardsList'),
+            historyRewardsList: document.getElementById('historyRewardsList'),
             resetRewards: document.getElementById('resetRewards'),
             confettiContainer: document.getElementById('confettiContainer'),
+            leftAnimalGif: document.getElementById('leftAnimalGif'),
+            rightAnimalGif: document.getElementById('rightAnimalGif'),
+            productivityPanel: document.getElementById('productivityPanel'),
+            closeProductivityPanel: document.getElementById('closeProductivityPanel'),
+            closeInfoPanel: document.getElementById('closeInfoPanel'),
+            closeNoisePanel: document.getElementById('closeNoisePanel'),
+            closeLofiPanel: document.getElementById('closeLofiPanel'),
+            closeHistoryPanel: document.getElementById('closeHistoryPanel'),
+            closeRewardsPanel: document.getElementById('closeRewardsPanel'),
             body: document.body,
             dropdownBtn: document.getElementById('dropdownBtn'),
             dropdownContent: document.getElementById('dropdownContent'),
+            infoMenuItem: document.getElementById('infoMenuItem'),
+            productivityMenuItem: document.getElementById('productivityMenuItem'),
+            noiseMenuItem: document.getElementById('noiseMenuItem'),
+            lofiMenuItem: document.getElementById('lofiMenuItem'),
             historyMenuItem: document.getElementById('historyMenuItem'),
             rewardsMenuItem: document.getElementById('rewardsMenuItem'),
             calendarMenuItem: document.getElementById('calendarMenuItem'),
+            donateMenuItem: document.getElementById('donateMenuItem'),
+            noisePlayBtn: document.getElementById('noisePlayBtn'),
+            noisePanel: document.getElementById('noisePanel'),
+            lofiPanel: document.getElementById('lofiPanel'),
             historyPanel: document.getElementById('historyPanel'),
             rewardsPanel: document.getElementById('rewardsPanel'),
-            calendarPanel: document.getElementById('calendarPanel'),
+            calendarPage: document.getElementById('calendarPage'),
             calendarTitle: document.getElementById('calendarTitle'),
             calendarGrid: document.getElementById('calendarGrid'),
             calendarSessions: document.getElementById('calendarSessions'),
             prevMonthBtn: document.getElementById('prevMonthBtn'),
             nextMonthBtn: document.getElementById('nextMonthBtn'),
             exportCalendarBtn: document.getElementById('exportCalendarBtn'),
-            closeHistoryPanel: document.getElementById('closeHistoryPanel'),
-            closeRewardsPanel: document.getElementById('closeRewardsPanel'),
-            closeCalendarPanel: document.getElementById('closeCalendarPanel'),
-            // Task management elements
-            taskNameInput: document.getElementById('taskNameInput'),
-            addTaskBtn: document.getElementById('addTaskBtn'),
-            taskList: document.getElementById('taskList')
+            backToTimerBtn: document.getElementById('backToTimerBtn')
         };
 
         // ========== State Management ==========
         const STATE = {
             timer: null,
             isRunning: false,
-            isPaused: false,
-            remainingTime: 0,
             isWorkMode: true,
             totalSeconds: 25 * 60,
             initialSeconds: 25 * 60,
-            pomodoroCount: 0,
-            breakCount: 0,
+            totalWorkSeconds: 0,
+            totalBreakSeconds: 0,
             sessionStartTime: null,
+            currentNoise: null,
+            currentVolume: 0.5,
+            isNoisePlaying: false,
+            currentNoiseType: 'none',
+            noiseNames: {
+                'rain': 'Rainfall',
+                'forest': 'Forest Sounds',
+                'waves': 'Ocean Waves',
+                'birds': 'Bird Songs',
+                'whitenoise': 'White Noise',
+                'coffee': 'Coffee Shop',
+                'none': 'No sound selected'
+            },
             sessionHistory: [],
             notes: [],
             rewards: {
@@ -1182,6 +1534,26 @@
                         current: 0,
                         reward: '🌟',
                         earned: false
+                    },
+                    {
+                        id: 'daily_4',
+                        title: 'Early Bird',
+                        description: 'Complete a work session before 8 AM',
+                        icon: '🐦',
+                        goal: 1,
+                        current: 0,
+                        reward: '🌞',
+                        earned: false
+                    },
+                    {
+                        id: 'daily_5',
+                        title: 'Night Owl',
+                        description: 'Complete a work session after 8 PM',
+                        icon: '🦉',
+                        goal: 1,
+                        current: 0,
+                        reward: '🌙',
+                        earned: false
                     }
                 ],
                 weekly: [
@@ -1213,6 +1585,26 @@
                         goal: 35,
                         current: 0,
                         reward: '💎',
+                        earned: false
+                    },
+                    {
+                        id: 'weekly_4',
+                        title: 'Consistency King',
+                        description: 'Complete at least 3 sessions every day for a week',
+                        icon: '👑',
+                        goal: 7,
+                        current: 0,
+                        reward: '🏅',
+                        earned: false
+                    },
+                    {
+                        id: 'weekly_5',
+                        title: 'Weekend Warrior',
+                        description: 'Complete 5 work sessions on weekend days',
+                        icon: '⚔️',
+                        goal: 5,
+                        current: 0,
+                        reward: '🛡️',
                         earned: false
                     }
                 ],
@@ -1246,9 +1638,32 @@
                         current: 0,
                         reward: '💎',
                         earned: false
+                    },
+                    {
+                        id: 'monthly_4',
+                        title: 'Perfect Attendance',
+                        description: 'Complete at least 1 session every day for a month',
+                        icon: '📅',
+                        goal: 30,
+                        current: 0,
+                        reward: '✨',
+                        earned: false
+                    },
+                    {
+                        id: 'monthly_5',
+                        title: 'Balance Master',
+                        description: 'Maintain at least 20% break time ratio for the month',
+                        icon: '⚖️',
+                        goal: 1,
+                        current: 0,
+                        reward: '🧘',
+                        earned: false
                     }
                 ]
             },
+            completedSessions: 0,
+            breakGif: 'assets/break-animation.gif',
+            lastTrackingUpdate: 0,
             dailyCompletedSessions: 0,
             weeklyCompletedSessions: 0,
             monthlyCompletedSessions: 0,
@@ -1262,10 +1677,7 @@
                 currentMonth: new Date().getMonth(),
                 currentYear: new Date().getFullYear(),
                 selectedDate: null
-            },
-            calendarOpen: false,
-            tasks: [],
-            activeTask: null
+            }
         };
 
         // ========== Timer Functions ==========
@@ -1279,22 +1691,30 @@
                 STATE.totalSeconds = minutes * 60 + seconds;
                 
                 // Only set initialSeconds if we're starting fresh (not resuming)
-                if (!STATE.isRunning && !STATE.isPaused) {
+                if (!STATE.isRunning) {
                     STATE.initialSeconds = STATE.totalSeconds;
                 }
                 
                 STATE.isRunning = true;
-                STATE.isPaused = false;
                 if (!STATE.sessionStartTime) {
                     STATE.sessionStartTime = new Date();
                 }
+                STATE.lastTrackingUpdate = Date.now();
                 
                 DOM.startButton.style.display = 'none';
                 DOM.stopButton.style.display = 'inline-block';
-                DOM.pauseButton.style.display = 'inline-block';
                 
                 DOM.body.classList.remove('work-mode', 'break-mode');
                 DOM.body.classList.add(STATE.isWorkMode ? 'work-mode' : 'break-mode');
+                
+                // Update animal GIFs based on mode
+                if (STATE.isWorkMode) {
+                    DOM.leftAnimalGif.src = 'assets/working-dog-animation.gif';
+                    DOM.rightAnimalGif.src = 'assets/working-dog-animation.gif';
+                } else {
+                    DOM.leftAnimalGif.src = STATE.breakGif;
+                    DOM.rightAnimalGif.src = STATE.breakGif;
+                }
                 
                 STATE.timer = setInterval(() => {
                     STATE.totalSeconds--;
@@ -1304,6 +1724,20 @@
                     const progressPercent = 100 - (STATE.totalSeconds / STATE.initialSeconds * 100);
                     DOM.timerProgress.style.background = `conic-gradient(var(--primary-blue) ${progressPercent}%, transparent ${progressPercent}%)`;
                     
+                    // Update tracking time in real-time
+                    const now = Date.now();
+                    const elapsedSeconds = Math.floor((now - STATE.lastTrackingUpdate) / 1000);
+                    
+                    if (elapsedSeconds >= 1) {
+                        if (STATE.isWorkMode) {
+                            STATE.totalWorkSeconds += elapsedSeconds;
+                        } else {
+                            STATE.totalBreakSeconds += elapsedSeconds;
+                        }
+                        STATE.lastTrackingUpdate = now;
+                        trackingActions.updateDisplay();
+                    }
+                    
                     if (STATE.totalSeconds === 0) {
                         // Celebration at 0
                         DOM.alarmSound.play();
@@ -1312,106 +1746,110 @@
                     
                     if (STATE.totalSeconds <= 0) {
                         // Keep counting negative
-                        if (STATE.totalSeconds === -1) {
-                            const sessionEndTime = new Date();
-                            const sessionDuration = Math.floor((sessionEndTime - STATE.sessionStartTime) / 1000);
+                        if (Math.abs(STATE.totalSeconds) % 60 === 0) {
+                            // Every minute after 0, add to tracking
+                            const now = Date.now();
+                            const elapsedSeconds = Math.floor((now - STATE.lastTrackingUpdate) / 1000);
                             
-                            if (STATE.isWorkMode) {
-                                STATE.pomodoroCount++;
-                                DOM.pomodoroCountDisplay.textContent = STATE.pomodoroCount;
-                                rewardActions.updateSessionCounters();
-                                historyActions.addSession({
-                                    type: 'work',
-                                    duration: sessionDuration,
-                                    notes: DOM.noteInput.value.trim() || 'Enter work/project here',
-                                    timestamp: STATE.sessionStartTime,
-                                    task: STATE.activeTask ? STATE.activeTask.name : null
-                                });
-                                rewardActions.updateRewards('work', sessionDuration);
-                            } else {
-                                STATE.breakCount++;
-                                DOM.breakCountDisplay.textContent = STATE.breakCount;
-                                historyActions.addSession({
-                                    type: 'break',
-                                    duration: sessionDuration,
-                                    notes: DOM.noteInput.value.trim() || 'Enter work/project here',
-                                    timestamp: STATE.sessionStartTime
-                                });
-                            }
-                            
-                            STATE.isWorkMode = !STATE.isWorkMode;
-                            timerActions.updateModeIndicator();
-                            
-                            DOM.body.classList.remove('work-mode', 'break-mode');
-                            DOM.body.classList.add(STATE.isWorkMode ? 'work-mode' : 'break-mode');
-                            
-                            if (STATE.isWorkMode) {
-                                timerActions.setQuickTime(25, 0, true);
-                            } else {
-                                const lastBreakWasShort = localStorage.getItem('lastBreakWasShort') === 'true';
-                                if (lastBreakWasShort) {
-                                    timerActions.setQuickTime(30, 0, false);
-                                    localStorage.setItem('lastBreakWasShort', 'false');
+                            if (elapsedSeconds >= 1) {
+                                if (STATE.isWorkMode) {
+                                    STATE.totalWorkSeconds += elapsedSeconds;
                                 } else {
-                                    timerActions.setQuickTime(5, 0, false);
-                                    localStorage.setItem('lastBreakWasShort', 'true');
+                                    STATE.totalBreakSeconds += elapsedSeconds;
                                 }
+                                STATE.lastTrackingUpdate = now;
+                                trackingActions.updateDisplay();
                             }
-                            
-                            // Reset the start/stop button
-                            DOM.startButton.style.display = 'inline-block';
-                            DOM.stopButton.style.display = 'none';
-                            DOM.pauseButton.style.display = 'none';
-                            STATE.sessionStartTime = null;
-                            STATE.isRunning = false;
-                            STATE.isPaused = false;
                         }
                     }
+                    
+                    // Check if we should end the session (only when coming from positive to negative)
+                    if (STATE.totalSeconds === -1) {
+                        const sessionEndTime = new Date();
+                        const sessionDuration = Math.floor((sessionEndTime - STATE.sessionStartTime) / 1000);
+                        
+                        if (STATE.isWorkMode) {
+                            STATE.totalWorkSeconds += sessionDuration;
+                            STATE.completedSessions++;
+                            rewardActions.updateSessionCounters();
+                            historyActions.addSession({
+                                type: 'work',
+                                duration: sessionDuration,
+                                notes: DOM.noteInput.value.trim() || 'Enter work/project here',
+                                timestamp: STATE.sessionStartTime
+                            });
+                            rewardActions.updateRewards('work', sessionDuration);
+                        } else {
+                            STATE.totalBreakSeconds += sessionDuration;
+                            historyActions.addSession({
+                                type: 'break',
+                                duration: sessionDuration,
+                                notes: DOM.noteInput.value.trim() || 'Enter work/project here',
+                                timestamp: STATE.sessionStartTime
+                            });
+                        }
+                        
+                        trackingActions.updateDisplay();
+                        
+                        STATE.isWorkMode = !STATE.isWorkMode;
+                        timerActions.updateModeIndicator();
+                        
+                        DOM.body.classList.remove('work-mode', 'break-mode');
+                        DOM.body.classList.add(STATE.isWorkMode ? 'work-mode' : 'break-mode');
+                        
+                        // Update animal GIFs based on new mode
+                        if (STATE.isWorkMode) {
+                            DOM.leftAnimalGif.src = 'assets/working-dog-animation.gif';
+                            DOM.rightAnimalGif.src = 'assets/working-dog-animation.gif';
+                        } else {
+                            DOM.leftAnimalGif.src = STATE.breakGif;
+                            DOM.rightAnimalGif.src = STATE.breakGif;
+                        }
+                        
+                        if (STATE.isWorkMode) {
+                            timerActions.setQuickTime(25, 0, true);
+                        } else {
+                            const lastBreakWasShort = localStorage.getItem('lastBreakWasShort') === 'true';
+                            if (lastBreakWasShort) {
+                                timerActions.setQuickTime(30, 0, false);
+                                localStorage.setItem('lastBreakWasShort', 'false');
+                            } else {
+                                timerActions.setQuickTime(5, 0, false);
+                                localStorage.setItem('lastBreakWasShort', 'true');
+                            }
+                        }
+                        
+                        // Reset the start/stop button
+                        DOM.startButton.style.display = 'inline-block';
+                        DOM.stopButton.style.display = 'none';
+                        STATE.sessionStartTime = null;
+                    }
                 }, 1000);
-            },
-
-            pause() {
-                if (STATE.isRunning && !STATE.isPaused) {
-                    clearInterval(STATE.timer);
-                    STATE.isPaused = true;
-                    STATE.remainingTime = STATE.totalSeconds;
-                    DOM.pauseButton.textContent = 'Resume';
-                } else if (STATE.isPaused) {
-                    STATE.totalSeconds = STATE.remainingTime;
-                    STATE.isPaused = false;
-                    DOM.pauseButton.textContent = 'Pause';
-                    timerActions.start();
-                }
             },
 
             stop() {
                 if (STATE.isRunning) {
                     clearInterval(STATE.timer);
                     STATE.isRunning = false;
-                    STATE.isPaused = false;
                     DOM.startButton.style.display = 'inline-block';
                     DOM.stopButton.style.display = 'none';
-                    DOM.pauseButton.style.display = 'none';
-                    DOM.pauseButton.textContent = 'Pause';
                     
                     const sessionEndTime = new Date();
                     const sessionDuration = Math.floor((sessionEndTime - STATE.sessionStartTime) / 1000);
                     
                     if (STATE.isWorkMode) {
-                        STATE.pomodoroCount++;
-                        DOM.pomodoroCountDisplay.textContent = STATE.pomodoroCount;
+                        STATE.totalWorkSeconds += sessionDuration;
+                        STATE.completedSessions++;
                         rewardActions.updateSessionCounters();
                         historyActions.addSession({
                             type: 'work',
                             duration: sessionDuration,
                             notes: DOM.noteInput.value.trim() || 'Enter work/project here',
-                            timestamp: STATE.sessionStartTime,
-                            task: STATE.activeTask ? STATE.activeTask.name : null
+                            timestamp: STATE.sessionStartTime
                         });
                         rewardActions.updateRewards('work', sessionDuration);
                     } else {
-                        STATE.breakCount++;
-                        DOM.breakCountDisplay.textContent = STATE.breakCount;
+                        STATE.totalBreakSeconds += sessionDuration;
                         historyActions.addSession({
                             type: 'break',
                             duration: sessionDuration,
@@ -1419,6 +1857,7 @@
                             timestamp: STATE.sessionStartTime
                         });
                     }
+                    trackingActions.updateDisplay();
                     STATE.sessionStartTime = null;
                 }
             },
@@ -1469,6 +1908,15 @@
                 
                 DOM.body.classList.remove('work-mode', 'break-mode');
                 DOM.body.classList.add(STATE.isWorkMode ? 'work-mode' : 'break-mode');
+                
+                // Update animal GIFs based on mode
+                if (STATE.isWorkMode) {
+                    DOM.leftAnimalGif.src = 'assets/working-dog-animation.gif';
+                    DOM.rightAnimalGif.src = 'assets/working-dog-animation.gif';
+                } else {
+                    DOM.leftAnimalGif.src = STATE.breakGif;
+                    DOM.rightAnimalGif.src = STATE.breakGif;
+                }
             },
 
             setMode(workMode) {
@@ -1477,6 +1925,15 @@
                 
                 DOM.body.classList.remove('work-mode', 'break-mode');
                 DOM.body.classList.add(STATE.isWorkMode ? 'work-mode' : 'break-mode');
+                
+                // Update animal GIFs based on mode
+                if (STATE.isWorkMode) {
+                    DOM.leftAnimalGif.src = 'assets/working-dog-animation.gif';
+                    DOM.rightAnimalGif.src = 'assets/working-dog-animation.gif';
+                } else {
+                    DOM.leftAnimalGif.src = STATE.breakGif;
+                    DOM.rightAnimalGif.src = STATE.breakGif;
+                }
             },
 
             updateModeIndicator() {
@@ -1487,101 +1944,6 @@
                     DOM.modeIndicator.textContent = "Break Time";
                     DOM.modeIndicator.className = "mode-indicator break-mode";
                 }
-            }
-        };
-
-        // ========== Task Management Functions ==========
-        const taskActions = {
-            addTask() {
-                const name = DOM.taskNameInput.value.trim();
-                
-                if (name) {
-                    const task = {
-                        id: Date.now(),
-                        name,
-                        completed: false
-                    };
-                    
-                    STATE.tasks.push(task);
-                    this.renderTasks();
-                    this.saveTasks();
-                    
-                    DOM.taskNameInput.value = '';
-                }
-            },
-            
-            deleteTask(taskId) {
-                STATE.tasks = STATE.tasks.filter(task => task.id !== taskId);
-                if (STATE.activeTask && STATE.activeTask.id === taskId) {
-                    STATE.activeTask = null;
-                }
-                this.renderTasks();
-                this.saveTasks();
-            },
-            
-            startTask(taskId) {
-                const task = STATE.tasks.find(t => t.id === taskId);
-                if (task) {
-                    STATE.activeTask = task;
-                    this.renderTasks();
-                }
-            },
-            
-            renderTasks() {
-                DOM.taskList.innerHTML = '';
-                
-                STATE.tasks.forEach(task => {
-                    const taskItem = document.createElement('div');
-                    taskItem.className = `task-item ${STATE.activeTask && STATE.activeTask.id === task.id ? 'active-task' : ''}`;
-                    
-                    taskItem.innerHTML = `
-                        <div class="task-info">
-                            <div class="task-name">${task.name}</div>
-                        </div>
-                        <div class="task-actions">
-                            ${!STATE.activeTask || STATE.activeTask.id !== task.id ? `
-                                <button class="task-btn start-task-btn" data-id="${task.id}">Start</button>
-                            ` : ''}
-                            <button class="task-btn delete-task-btn" data-id="${task.id}">Delete</button>
-                        </div>
-                    `;
-                    
-                    DOM.taskList.appendChild(taskItem);
-                });
-                
-                // Add event listeners
-                document.querySelectorAll('.start-task-btn').forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        const taskId = parseInt(btn.getAttribute('data-id'));
-                        taskActions.startTask(taskId);
-                    });
-                });
-                
-                document.querySelectorAll('.delete-task-btn').forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        const taskId = parseInt(btn.getAttribute('data-id'));
-                        taskActions.deleteTask(taskId);
-                    });
-                });
-            },
-            
-            saveTasks() {
-                localStorage.setItem('tasks', JSON.stringify(STATE.tasks));
-                localStorage.setItem('activeTask', JSON.stringify(STATE.activeTask));
-            },
-            
-            loadTasks() {
-                const savedTasks = localStorage.getItem('tasks');
-                if (savedTasks) {
-                    STATE.tasks = JSON.parse(savedTasks);
-                }
-                
-                const savedActiveTask = localStorage.getItem('activeTask');
-                if (savedActiveTask) {
-                    STATE.activeTask = JSON.parse(savedActiveTask);
-                }
-                
-                this.renderTasks();
             }
         };
 
@@ -1605,6 +1967,7 @@
                     confetti.className = 'confetti';
                     
                     const colors = ['#e91e63', '#4caf50', '#2196f3', '#ff9800', '#9c27b0'];
+                    const shapes = ['circle', 'square', 'triangle'];
                     
                     confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
                     confetti.style.left = Math.random() * 100 + 'vw';
@@ -1654,14 +2017,25 @@
 
         // ========== Tracking Functions ==========
         const trackingActions = {
+            updateDisplay() {
+                DOM.totalWorkDisplay.textContent = trackingActions.formatTime(STATE.totalWorkSeconds);
+                DOM.totalBreakDisplay.textContent = trackingActions.formatTime(STATE.totalBreakSeconds);
+            },
+
+            formatTime(totalSeconds) {
+                const hours = Math.floor(totalSeconds / 3600);
+                const minutes = Math.floor((totalSeconds % 3600) / 60);
+                const seconds = totalSeconds % 60;
+                return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            },
+
             resetTracking() {
-                if (confirm('Are you sure you want to reset all tracking data?')) {
-                    STATE.pomodoroCount = 0;
-                    STATE.breakCount = 0;
-                    DOM.pomodoroCountDisplay.textContent = '0';
-                    DOM.breakCountDisplay.textContent = '0';
-                    localStorage.setItem('pomodoroCount', '0');
-                    localStorage.setItem('breakCount', '0');
+                if (confirm('Are you sure you want to reset all tracking time?')) {
+                    STATE.totalWorkSeconds = 0;
+                    STATE.totalBreakSeconds = 0;
+                    this.updateDisplay();
+                    localStorage.setItem('totalWorkSeconds', '0');
+                    localStorage.setItem('totalBreakSeconds', '0');
                 }
             }
         };
@@ -1671,7 +2045,10 @@
             updateSessionCounters() {
                 const now = new Date();
                 const today = now.toDateString();
-                const currentDay = now.getDay();
+                const currentDay = now.getDay(); // 0 (Sunday) to 6 (Saturday)
+                const currentDate = now.getDate();
+                const currentMonth = now.getMonth();
+                const currentYear = now.getFullYear();
                 
                 // Check if we need to reset counters
                 if (!STATE.lastSessionDate || STATE.lastSessionDate.toDateString() !== today) {
@@ -1690,7 +2067,7 @@
                     }
                     
                     // Check if new month
-                    if (now.getDate() === 1 || !STATE.lastSessionDate) {
+                    if (currentDate === 1 || !STATE.lastSessionDate) {
                         if (STATE.monthlyCompletedSessions > 0) {
                             rewardActions.archiveRewardProgress('monthly', STATE.monthlyCompletedSessions);
                         }
@@ -1714,7 +2091,7 @@
                     periodName = now.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
                 } else if (type === 'weekly') {
                     const startOfWeek = new Date(now);
-                    startOfWeek.setDate(now.getDate() - now.getDay() + 1);
+                    startOfWeek.setDate(now.getDate() - now.getDay() + 1); // Get Monday of this week
                     periodName = `Week of ${startOfWeek.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
                 } else if (type === 'monthly') {
                     periodName = now.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
@@ -1728,6 +2105,7 @@
                 });
                 
                 this.saveRewards();
+                this.renderRewardHistory();
             },
             
             updateRewards(type, duration) {
@@ -1817,8 +2195,8 @@
             
             saveRewards() {
                 localStorage.setItem('rewards', JSON.stringify(STATE.rewards));
-                localStorage.setItem('pomodoroCount', STATE.pomodoroCount.toString());
-                localStorage.setItem('breakCount', STATE.breakCount.toString());
+                localStorage.setItem('completedSessions', STATE.completedSessions.toString());
+                localStorage.setItem('totalWorkSeconds', STATE.totalWorkSeconds.toString());
                 localStorage.setItem('dailyCompletedSessions', STATE.dailyCompletedSessions.toString());
                 localStorage.setItem('weeklyCompletedSessions', STATE.weeklyCompletedSessions.toString());
                 localStorage.setItem('monthlyCompletedSessions', STATE.monthlyCompletedSessions.toString());
@@ -1832,11 +2210,8 @@
                     STATE.rewards = JSON.parse(savedRewards);
                 }
                 
-                STATE.pomodoroCount = parseInt(localStorage.getItem('pomodoroCount')) || 0;
-                STATE.breakCount = parseInt(localStorage.getItem('breakCount')) || 0;
-                DOM.pomodoroCountDisplay.textContent = STATE.pomodoroCount;
-                DOM.breakCountDisplay.textContent = STATE.breakCount;
-                
+                STATE.completedSessions = parseInt(localStorage.getItem('completedSessions')) || 0;
+                STATE.totalWorkSeconds = parseInt(localStorage.getItem('totalWorkSeconds')) || 0;
                 STATE.dailyCompletedSessions = parseInt(localStorage.getItem('dailyCompletedSessions')) || 0;
                 STATE.weeklyCompletedSessions = parseInt(localStorage.getItem('weeklyCompletedSessions')) || 0;
                 STATE.monthlyCompletedSessions = parseInt(localStorage.getItem('monthlyCompletedSessions')) || 0;
@@ -1884,6 +2259,7 @@
                 });
                 
                 this.renderRewards();
+                this.renderRewardHistory();
             },
             
             renderRewards() {
@@ -1967,6 +2343,77 @@
                 });
             },
             
+            renderRewardHistory() {
+                DOM.historyRewardsList.innerHTML = '';
+                
+                // Render daily history
+                if (STATE.rewardHistory.daily.length > 0) {
+                    const dailyHeader = document.createElement('h4');
+                    dailyHeader.textContent = 'Daily Progress History';
+                    DOM.historyRewardsList.appendChild(dailyHeader);
+                    
+                    STATE.rewardHistory.daily.forEach(item => {
+                        const historyItem = document.createElement('div');
+                        historyItem.className = 'history-item';
+                        historyItem.innerHTML = `
+                            <div><strong>${item.periodName}</strong></div>
+                            <div>Completed: ${item.completedSessions} sessions</div>
+                            <div style="font-size: 0.8em; color: #666;">${item.archivedAt.toLocaleDateString()}</div>
+                        `;
+                        DOM.historyRewardsList.appendChild(historyItem);
+                    });
+                }
+                
+                // Render weekly history
+                if (STATE.rewardHistory.weekly.length > 0) {
+                    const weeklyHeader = document.createElement('h4');
+                    weeklyHeader.textContent = 'Weekly Progress History';
+                    weeklyHeader.style.marginTop = '20px';
+                    DOM.historyRewardsList.appendChild(weeklyHeader);
+                    
+                    STATE.rewardHistory.weekly.forEach(item => {
+                        const historyItem = document.createElement('div');
+                        historyItem.className = 'history-item';
+                        historyItem.innerHTML = `
+                            <div><strong>${item.periodName}</strong></div>
+                            <div>Completed: ${item.completedSessions} sessions</div>
+                            <div style="font-size: 0.8em; color: #666;">${item.archivedAt.toLocaleDateString()}</div>
+                        `;
+                        DOM.historyRewardsList.appendChild(historyItem);
+                    });
+                }
+                
+                // Render monthly history
+                if (STATE.rewardHistory.monthly.length > 0) {
+                    const monthlyHeader = document.createElement('h4');
+                    monthlyHeader.textContent = 'Monthly Progress History';
+                    monthlyHeader.style.marginTop = '20px';
+                    DOM.historyRewardsList.appendChild(monthlyHeader);
+                    
+                    STATE.rewardHistory.monthly.forEach(item => {
+                        const historyItem = document.createElement('div');
+                        historyItem.className = 'history-item';
+                        historyItem.innerHTML = `
+                            <div><strong>${item.periodName}</strong></div>
+                            <div>Completed: ${item.completedSessions} sessions</div>
+                            <div style="font-size: 0.8em; color: #666;">${item.archivedAt.toLocaleDateString()}</div>
+                        `;
+                        DOM.historyRewardsList.appendChild(historyItem);
+                    });
+                }
+                
+                if (STATE.rewardHistory.daily.length === 0 && 
+                    STATE.rewardHistory.weekly.length === 0 && 
+                    STATE.rewardHistory.monthly.length === 0) {
+                    const emptyMessage = document.createElement('p');
+                    emptyMessage.textContent = 'No reward history yet';
+                    emptyMessage.style.textAlign = 'center';
+                    emptyMessage.style.padding = '20px';
+                    emptyMessage.style.color = '#666';
+                    DOM.historyRewardsList.appendChild(emptyMessage);
+                }
+            },
+            
             resetRewards() {
                 if (confirm('Are you sure you want to reset all rewards progress? This will not delete your history.')) {
                     STATE.rewards.daily.forEach(reward => {
@@ -2030,8 +2477,7 @@
                             type: isWorkNote ? 'work' : 'break',
                             duration: 0,
                             notes: noteText,
-                            timestamp: now,
-                            task: isWorkNote && STATE.activeTask ? STATE.activeTask.name : null
+                            timestamp: now
                         });
                     }
                     
@@ -2104,6 +2550,10 @@
                         }
                     });
                 });
+                
+                STATE.totalWorkSeconds = parseInt(localStorage.getItem('totalWorkSeconds')) || 0;
+                STATE.totalBreakSeconds = parseInt(localStorage.getItem('totalBreakSeconds')) || 0;
+                trackingActions.updateDisplay();
             },
 
             copyToClipboard() {
@@ -2149,6 +2599,10 @@
                     STATE.sessionHistory = [];
                     this.saveHistory();
                     DOM.historyList.innerHTML = '';
+                    // Force immediate UI update
+                    setTimeout(() => {
+                        historyActions.renderHistory();
+                    }, 0);
                 }
             },
 
@@ -2159,14 +2613,11 @@
                     const date = new Date(session.timestamp);
                     const dateString = date.toLocaleDateString();
                     const timeString = date.toLocaleTimeString();
-                    const durationMinutes = Math.floor(session.duration / 60);
-                    const durationSeconds = session.duration % 60;
-                    const durationString = `${durationMinutes.toString().padStart(2, '0')}:${durationSeconds.toString().padStart(2, '0')}`;
+                    const durationString = trackingActions.formatTime(session.duration);
                     
                     historyText += `Type: ${session.type.toUpperCase()}\n`;
                     historyText += `Date: ${dateString} ${timeString}\n`;
                     historyText += `Duration: ${durationString}\n`;
-                    historyText += `Task: ${session.task || 'N/A'}\n`;
                     historyText += `Notes: ${session.notes || 'Enter work/project here'}\n\n`;
                 });
                 
@@ -2200,9 +2651,7 @@
                     const date = new Date(session.timestamp);
                     const dateString = date.toLocaleDateString();
                     const timeString = date.toLocaleTimeString();
-                    const durationMinutes = Math.floor(session.duration / 60);
-                    const durationSeconds = session.duration % 60;
-                    const durationString = `${durationMinutes.toString().padStart(2, '0')}:${durationSeconds.toString().padStart(2, '0')}`;
+                    const durationString = trackingActions.formatTime(session.duration);
                     
                     historyItem.innerHTML = `
                         <div class="history-header">
@@ -2210,7 +2659,6 @@
                             <span class="history-time" contenteditable="true" data-type="time" data-index="${index}">${dateString} ${timeString}</span>
                         </div>
                         <div class="history-duration editable" contenteditable="true" data-type="duration" data-index="${index}">Duration: ${durationString}</div>
-                        ${session.task ? `<div class="history-task">Task: ${session.task}</div>` : ''}
                         <div class="history-notes editable" contenteditable="true" data-type="notes" data-index="${index}">${session.notes || 'Enter work/project here'}</div>
                         <div class="history-actions">
                             <button class="history-action-btn" onclick="historyActions.deleteSession(${index})">Delete</button>
@@ -2238,8 +2686,8 @@
                         } else if (type === 'duration') {
                             // Parse duration from text like "Duration: 00:05:00"
                             const durationText = this.textContent.replace('Duration: ', '');
-                            const [minutes, seconds] = durationText.split(':').map(Number);
-                            STATE.sessionHistory[index].duration = minutes * 60 + seconds;
+                            const [hours, minutes, seconds] = durationText.split(':').map(Number);
+                            STATE.sessionHistory[index].duration = hours * 3600 + minutes * 60 + seconds;
                         } else if (type === 'notes') {
                             STATE.sessionHistory[index].notes = this.textContent;
                         }
@@ -2353,14 +2801,11 @@
                     
                     const sessionDate = new Date(session.timestamp);
                     const timeString = sessionDate.toLocaleTimeString();
-                    const durationMinutes = Math.floor(session.duration / 60);
-                    const durationSeconds = session.duration % 60;
-                    const durationString = `${durationMinutes.toString().padStart(2, '0')}:${durationSeconds.toString().padStart(2, '0')}`;
+                    const durationString = trackingActions.formatTime(session.duration);
                     
                     sessionItem.innerHTML = `
                         <div class="calendar-session-time">${timeString}</div>
                         <div class="calendar-session-duration">${durationString}</div>
-                        ${session.task ? `<div class="calendar-session-task">Task: ${session.task}</div>` : ''}
                         <div class="calendar-session-notes" contenteditable="true" data-index="${index}">${session.notes || 'Enter work/project here'}</div>
                     `;
                     
@@ -2417,13 +2862,12 @@
                 });
                 
                 // Create CSV content
-                let csvContent = "Date,Type,Duration (seconds),Task,Notes\n";
+                let csvContent = "Date,Type,Duration (seconds),Notes\n";
                 
                 Object.keys(sessionsByDate).sort().forEach(date => {
                     sessionsByDate[date].forEach(session => {
                         const notes = session.notes ? `"${session.notes.replace(/"/g, '""')}"` : '';
-                        const task = session.task || '';
-                        csvContent += `${date},${session.type},${session.duration},"${task}",${notes}\n`;
+                        csvContent += `${date},${session.type},${session.duration},${notes}\n`;
                     });
                 });
                 
@@ -2440,33 +2884,74 @@
             },
             
             toggleCalendar() {
-                STATE.calendarOpen = !STATE.calendarOpen;
-                if (STATE.calendarOpen) {
-                    DOM.calendarPanel.classList.add('show');
+                DOM.calendarPage.classList.toggle('show');
+                if (DOM.calendarPage.classList.contains('show')) {
                     this.renderCalendar();
-                } else {
-                    DOM.calendarPanel.classList.remove('show');
                 }
             }
         };
 
-        // ========== Panel Control Functions ==========
-        const panelActions = {
+        // ========== Sound Control Functions ==========
+        const soundActions = {
             togglePanel(panel) {
-                const panels = [DOM.historyPanel, DOM.rewardsPanel, DOM.calendarPanel];
+                const panels = [DOM.infoPanel, DOM.noisePanel, DOM.lofiPanel, DOM.historyPanel, DOM.rewardsPanel, DOM.productivityPanel];
                 panels.forEach(p => {
                     if (p === panel) {
                         p.classList.toggle('show');
-                        if (p === DOM.calendarPanel) {
-                            STATE.calendarOpen = p.classList.contains('show');
-                            if (STATE.calendarOpen) {
-                                calendarActions.renderCalendar();
-                            }
-                        }
                     } else {
                         p.classList.remove('show');
                     }
                 });
+            },
+            
+            toggleNoisePlayback() {
+                if (STATE.currentNoiseType === 'none') return;
+                
+                if (STATE.isNoisePlaying) {
+                    STATE.currentNoise.pause();
+                    DOM.noisePlayBtn.textContent = '▶️';
+                    STATE.isNoisePlaying = false;
+                } else {
+                    STATE.currentNoise.play();
+                    DOM.noisePlayBtn.textContent = '⏸️';
+                    STATE.isNoisePlaying = true;
+                }
+            },
+            
+            changeBackgroundNoise(e) {
+                if (STATE.currentNoise) {
+                    STATE.currentNoise.pause();
+                    STATE.currentNoise.currentTime = 0;
+                }
+                
+                const selectedNoise = e.target.value;
+                STATE.currentNoiseType = selectedNoise;
+                
+                if (selectedNoise !== 'none') {
+                    STATE.currentNoise = document.getElementById(`${selectedNoise}Sound`);
+                    STATE.currentNoise.volume = STATE.currentVolume;
+                    STATE.currentNoise.play();
+                    STATE.isNoisePlaying = true;
+                    DOM.noisePlayBtn.textContent = '⏸️';
+                    DOM.nowPlaying.textContent = `Now playing: ${STATE.noiseNames[selectedNoise]}`;
+                } else {
+                    STATE.currentNoise = null;
+                    STATE.isNoisePlaying = false;
+                    DOM.noisePlayBtn.textContent = '▶️';
+                    DOM.nowPlaying.textContent = STATE.noiseNames['none'];
+                }
+                
+                document.querySelectorAll('.noise-option').forEach(option => {
+                    option.classList.remove('active');
+                });
+                e.target.closest('.noise-option').classList.add('active');
+            },
+            
+            updateVolume() {
+                STATE.currentVolume = parseFloat(DOM.volumeControl.value);
+                if (STATE.currentNoise) {
+                    STATE.currentNoise.volume = STATE.currentVolume;
+                }
             }
         };
 
@@ -2503,18 +2988,43 @@
             },
             
             setupMenuItems() {
+                DOM.infoMenuItem.addEventListener('click', () => {
+                    soundActions.togglePanel(DOM.infoPanel);
+                    this.closeDropdown();
+                });
+                
+                DOM.productivityMenuItem.addEventListener('click', () => {
+                    soundActions.togglePanel(DOM.productivityPanel);
+                    this.closeDropdown();
+                });
+                
+                DOM.noiseMenuItem.addEventListener('click', () => {
+                    soundActions.togglePanel(DOM.noisePanel);
+                    this.closeDropdown();
+                });
+                
+                DOM.lofiMenuItem.addEventListener('click', () => {
+                    soundActions.togglePanel(DOM.lofiPanel);
+                    this.closeDropdown();
+                });
+                
                 DOM.historyMenuItem.addEventListener('click', () => {
-                    panelActions.togglePanel(DOM.historyPanel);
+                    soundActions.togglePanel(DOM.historyPanel);
                     this.closeDropdown();
                 });
                 
                 DOM.rewardsMenuItem.addEventListener('click', () => {
-                    panelActions.togglePanel(DOM.rewardsPanel);
+                    soundActions.togglePanel(DOM.rewardsPanel);
                     this.closeDropdown();
                 });
                 
                 DOM.calendarMenuItem.addEventListener('click', () => {
-                    panelActions.togglePanel(DOM.calendarPanel);
+                    calendarActions.toggleCalendar();
+                    this.closeDropdown();
+                });
+                
+                DOM.donateMenuItem.addEventListener('click', () => {
+                    window.open('https://www.paypal.com/donate?business=YOUR_PAYPAL_EMAIL&item_name=Support+Pomodoro+Timer+Creator', '_blank');
                     this.closeDropdown();
                 });
             }
@@ -2524,7 +3034,6 @@
         function setupEventListeners() {
             DOM.startButton.addEventListener('click', timerActions.start);
             DOM.stopButton.addEventListener('click', timerActions.stop);
-            DOM.pauseButton.addEventListener('click', timerActions.pause);
             DOM.resetButton.addEventListener('click', timerActions.reset);
             DOM.work25Button.addEventListener('click', () => timerActions.setQuickTime(25, 0, true));
             DOM.break5Button.addEventListener('click', () => timerActions.setQuickTime(5, 0, false));
@@ -2537,21 +3046,38 @@
             DOM.copyNotesButton.addEventListener('click', noteActions.copyToClipboard);
             DOM.deleteAllNotes.addEventListener('click', noteActions.deleteAllNotes);
             DOM.resetTracking.addEventListener('click', trackingActions.resetTracking);
+            
+            DOM.noisePlayBtn.addEventListener('click', soundActions.toggleNoisePlayback);
+            DOM.volumeControl.addEventListener('input', soundActions.updateVolume);
+            DOM.noiseOptions.forEach(option => {
+                option.addEventListener('change', soundActions.changeBackgroundNoise);
+            });
 
             DOM.clearHistory.addEventListener('click', historyActions.clearHistory);
             DOM.exportHistory.addEventListener('click', historyActions.exportHistory);
 
+            DOM.closeProductivityPanel.addEventListener('click', () => {
+                DOM.productivityPanel.classList.remove('show');
+            });
+            
+            DOM.closeInfoPanel.addEventListener('click', () => {
+                DOM.infoPanel.classList.remove('show');
+            });
+            
+            DOM.closeNoisePanel.addEventListener('click', () => {
+                DOM.noisePanel.classList.remove('show');
+            });
+            
+            DOM.closeLofiPanel.addEventListener('click', () => {
+                DOM.lofiPanel.classList.remove('show');
+            });
+            
             DOM.closeHistoryPanel.addEventListener('click', () => {
                 DOM.historyPanel.classList.remove('show');
             });
             
             DOM.closeRewardsPanel.addEventListener('click', () => {
                 DOM.rewardsPanel.classList.remove('show');
-            });
-            
-            DOM.closeCalendarPanel.addEventListener('click', () => {
-                DOM.calendarPanel.classList.remove('show');
-                STATE.calendarOpen = false;
             });
 
             DOM.resetRewards.addEventListener('click', rewardActions.resetRewards);
@@ -2560,9 +3086,9 @@
             DOM.prevMonthBtn.addEventListener('click', () => calendarActions.changeMonth(-1));
             DOM.nextMonthBtn.addEventListener('click', () => calendarActions.changeMonth(1));
             DOM.exportCalendarBtn.addEventListener('click', calendarActions.exportCalendarData);
-
-            // Task management
-            DOM.addTaskBtn.addEventListener('click', () => taskActions.addTask());
+            DOM.backToTimerBtn.addEventListener('click', () => {
+                DOM.calendarPage.classList.remove('show');
+            });
 
             // Dropdown menu events
             DOM.dropdownBtn.addEventListener('click', (e) => {
@@ -2573,24 +3099,23 @@
             dropdownActions.setupMenuItems();
 
             document.addEventListener('click', (e) => {
-                const panels = [DOM.historyPanel, DOM.rewardsPanel, DOM.calendarPanel];
+                const panels = [DOM.infoPanel, DOM.noisePanel, DOM.lofiPanel, DOM.historyPanel, 
+                               DOM.rewardsPanel, DOM.productivityPanel];
                 
-                if (!panels.some(panel => panel.contains(e.target)) {
+                if (!panels.some(panel => panel.contains(e.target)) && 
+                    !DOM.dropdownBtn.contains(e.target) && 
+                    !DOM.dropdownContent.contains(e.target)) {
                     panels.forEach(panel => panel.classList.remove('show'));
-                }
-                
-                if (!DOM.dropdownBtn.contains(e.target) && !DOM.dropdownContent.contains(e.target)) {
                     dropdownActions.closeDropdown();
                 }
             });
             
             window.addEventListener('beforeunload', () => {
-                localStorage.setItem('pomodoroCount', STATE.pomodoroCount.toString());
-                localStorage.setItem('breakCount', STATE.breakCount.toString());
+                localStorage.setItem('totalWorkSeconds', STATE.totalWorkSeconds.toString());
+                localStorage.setItem('totalBreakSeconds', STATE.totalBreakSeconds.toString());
                 noteActions.saveToStorage();
                 historyActions.saveHistory();
                 rewardActions.saveRewards();
-                taskActions.saveTasks();
             });
 
             rewardTabActions.setupTabs();
@@ -2626,14 +3151,22 @@
             noteActions.loadFromStorage();
             historyActions.loadHistory();
             rewardActions.loadRewards();
-            taskActions.loadTasks();
             timerActions.updateModeIndicator();
+            soundActions.updateVolume();
+            DOM.nowPlaying.textContent = STATE.noiseNames['none'];
             
             // Set initial progress circle
             DOM.timerProgress.style.background = `conic-gradient(var(--primary-blue) 0%, transparent 0%)`;
             
             // Initialize rewards
             rewardTabActions.setupTabs();
+            
+            // Set up scrollable rewards panel
+            const rewardsContents = document.querySelectorAll('.reward-tab-content');
+            rewardsContents.forEach(content => {
+                content.style.maxHeight = '400px';
+                content.style.overflowY = 'auto';
+            });
         }
 
         init();
