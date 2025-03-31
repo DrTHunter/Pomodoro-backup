@@ -839,20 +839,23 @@
             pointer-events: none;
         }
 
-        /* Calendar styles */
-        .calendar-panel {
-            position: fixed;
-            background-color: white;
-            border-radius: 15px;
-            padding: 15px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        /* Calendar Page Styles */
+        .calendar-page {
             display: none;
-            max-height: 80vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: white;
+            z-index: 1000;
             overflow-y: auto;
-            z-index: 101;
-            width: 350px;
-            left: 50%;
-            transform: translateX(-50%);
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .calendar-page.show {
+            display: block;
         }
 
         .calendar-header {
@@ -863,7 +866,7 @@
         }
 
         .calendar-title {
-            font-size: 1.2em;
+            font-size: 1.5em;
             font-weight: bold;
             color: var(--accent-purple);
         }
@@ -871,7 +874,6 @@
         .calendar-nav {
             display: flex;
             gap: 10px;
-            margin-left: 20px; /* Added to move arrows left */
         }
 
         .calendar-nav button {
@@ -891,15 +893,19 @@
         .calendar-day-header {
             text-align: center;
             font-weight: bold;
-            padding: 5px;
+            padding: 10px;
             color: var(--accent-purple);
+            background-color: #f5f5f5;
+            border-radius: 5px;
         }
 
         .calendar-day {
             text-align: center;
-            padding: 8px;
+            padding: 15px;
             border-radius: 5px;
             cursor: pointer;
+            border: 1px solid #eee;
+            transition: all 0.2s;
         }
 
         .calendar-day:hover {
@@ -927,28 +933,28 @@
         }
 
         .calendar-sessions {
-            margin-top: 15px;
+            margin-top: 30px;
             max-height: 300px;
             overflow-y: auto;
         }
 
         .calendar-session-item {
-            padding: 8px;
-            margin-bottom: 5px;
+            padding: 12px;
+            margin-bottom: 8px;
             border-radius: 5px;
             background-color: #f5f5f5;
         }
 
         .calendar-session-item.work {
-            border-left: 3px solid var(--primary-pink);
+            border-left: 4px solid var(--primary-pink);
         }
 
         .calendar-session-item.break {
-            border-left: 3px solid var(--primary-green);
+            border-left: 4px solid var(--primary-green);
         }
 
         .calendar-session-time {
-            font-size: 0.8em;
+            font-size: 0.9em;
             color: #666;
         }
 
@@ -957,7 +963,7 @@
         }
 
         .calendar-session-notes {
-            margin-top: 3px;
+            margin-top: 5px;
             font-size: 0.9em;
         }
 
@@ -965,10 +971,25 @@
             background-color: var(--primary-blue);
             color: white;
             border: none;
-            padding: 8px 15px;
+            padding: 12px 25px;
             border-radius: 5px;
-            margin-top: 10px;
+            margin-top: 20px;
             cursor: pointer;
+            font-size: 1em;
+        }
+
+        .back-to-timer-btn {
+            background-color: var(--primary-purple);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            margin-top: 20px;
+            cursor: pointer;
+            font-size: 1em;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
         }
 
         /* Mobile responsiveness */
@@ -1039,9 +1060,15 @@
                 }
             }
 
-            /* Remove close button from calendar panel */
-            #closeCalendarPanel {
-                display: none;
+            /* Calendar page adjustments for mobile */
+            .calendar-day {
+                padding: 8px;
+                font-size: 0.9em;
+            }
+            
+            .calendar-day-header {
+                padding: 8px;
+                font-size: 0.9em;
             }
         }
 
@@ -1054,11 +1081,12 @@
                 transform: none;
             }
             
-            .calendar-panel {
-                top: 90px;
-                left: auto;
-                right: 20px;
-                transform: none;
+            .calendar-page {
+                padding: 40px;
+            }
+            
+            .calendar-grid {
+                gap: 10px;
             }
         }
 
@@ -1069,6 +1097,7 @@
     </style>
 </head>
 <body>
+    <!-- Pomodoro Timer Page -->
     <div class="animal-side animal-left">
         <img class="animal-gif" id="leftAnimalGif" src="assets/working-dog-animation.gif" alt="Working animal">
     </div>
@@ -1168,6 +1197,37 @@
 
     <div class="animal-side animal-right">
         <img class="animal-gif" id="rightAnimalGif" src="assets/working-dog-animation.gif" alt="Working animal">
+    </div>
+
+    <!-- Calendar Page -->
+    <div class="calendar-page" id="calendarPage">
+        <div class="calendar-header">
+            <div class="calendar-title" id="calendarTitle">March 2023</div>
+            <div class="calendar-nav">
+                <button id="prevMonthBtn">&lt;</button>
+                <button id="nextMonthBtn">&gt;</button>
+            </div>
+        </div>
+        
+        <div class="calendar-grid" id="calendarGrid">
+            <!-- Calendar headers -->
+            <div class="calendar-day-header">Sun</div>
+            <div class="calendar-day-header">Mon</div>
+            <div class="calendar-day-header">Tue</div>
+            <div class="calendar-day-header">Wed</div>
+            <div class="calendar-day-header">Thu</div>
+            <div class="calendar-day-header">Fri</div>
+            <div class="calendar-day-header">Sat</div>
+            
+            <!-- Calendar days will be inserted here by JavaScript -->
+        </div>
+        
+        <div class="calendar-sessions" id="calendarSessions">
+            <p style="text-align: center; padding: 20px; color: #666;">Select a date to view sessions</p>
+        </div>
+        
+        <button id="exportCalendarBtn" class="calendar-export-btn">Export Calendar Data</button>
+        <button id="backToTimerBtn" class="back-to-timer-btn">Back to Timer</button>
     </div>
 
     <!-- Productivity Info Panel -->
@@ -1328,37 +1388,6 @@
         </div>
     </div>
 
-    <!-- Calendar Panel -->
-    <div class="panel calendar-panel" id="calendarPanel">
-        <button class="close-panel-btn" id="closeCalendarPanel">×</button>
-        <div class="calendar-header">
-            <div class="calendar-title" id="calendarTitle">March 2023</div>
-            <div class="calendar-nav">
-                <button id="prevMonthBtn">&lt;</button>
-                <button id="nextMonthBtn">&gt;</button>
-            </div>
-        </div>
-        
-        <div class="calendar-grid" id="calendarGrid">
-            <!-- Calendar headers -->
-            <div class="calendar-day-header">Sun</div>
-            <div class="calendar-day-header">Mon</div>
-            <div class="calendar-day-header">Tue</div>
-            <div class="calendar-day-header">Wed</div>
-            <div class="calendar-day-header">Thu</div>
-            <div class="calendar-day-header">Fri</div>
-            <div class="calendar-day-header">Sat</div>
-            
-            <!-- Calendar days will be inserted here by JavaScript -->
-        </div>
-        
-        <div class="calendar-sessions" id="calendarSessions">
-            <p style="text-align: center; padding: 20px; color: #666;">Select a date to view sessions</p>
-        </div>
-        
-        <button id="exportCalendarBtn" class="calendar-export-btn">Export Calendar Data</button>
-    </div>
-
     <!-- Confetti Container -->
     <div class="confetti-container" id="confettiContainer"></div>
 
@@ -1423,7 +1452,6 @@
             closeLofiPanel: document.getElementById('closeLofiPanel'),
             closeHistoryPanel: document.getElementById('closeHistoryPanel'),
             closeRewardsPanel: document.getElementById('closeRewardsPanel'),
-            closeCalendarPanel: document.getElementById('closeCalendarPanel'),
             body: document.body,
             dropdownBtn: document.getElementById('dropdownBtn'),
             dropdownContent: document.getElementById('dropdownContent'),
@@ -1440,13 +1468,14 @@
             lofiPanel: document.getElementById('lofiPanel'),
             historyPanel: document.getElementById('historyPanel'),
             rewardsPanel: document.getElementById('rewardsPanel'),
-            calendarPanel: document.getElementById('calendarPanel'),
+            calendarPage: document.getElementById('calendarPage'),
             calendarTitle: document.getElementById('calendarTitle'),
             calendarGrid: document.getElementById('calendarGrid'),
             calendarSessions: document.getElementById('calendarSessions'),
             prevMonthBtn: document.getElementById('prevMonthBtn'),
             nextMonthBtn: document.getElementById('nextMonthBtn'),
-            exportCalendarBtn: document.getElementById('exportCalendarBtn')
+            exportCalendarBtn: document.getElementById('exportCalendarBtn'),
+            backToTimerBtn: document.getElementById('backToTimerBtn')
         };
 
         // ========== State Management ==========
@@ -1648,8 +1677,7 @@
                 currentMonth: new Date().getMonth(),
                 currentYear: new Date().getFullYear(),
                 selectedDate: null
-            },
-            calendarOpen: false // Track if calendar is open
+            }
         };
 
         // ========== Timer Functions ==========
@@ -2856,12 +2884,9 @@
             },
             
             toggleCalendar() {
-                STATE.calendarOpen = !STATE.calendarOpen;
-                if (STATE.calendarOpen) {
-                    DOM.calendarPanel.classList.add('show');
+                DOM.calendarPage.classList.toggle('show');
+                if (DOM.calendarPage.classList.contains('show')) {
                     this.renderCalendar();
-                } else {
-                    DOM.calendarPanel.classList.remove('show');
                 }
             }
         };
@@ -2869,16 +2894,10 @@
         // ========== Sound Control Functions ==========
         const soundActions = {
             togglePanel(panel) {
-                const panels = [DOM.infoPanel, DOM.noisePanel, DOM.lofiPanel, DOM.historyPanel, DOM.rewardsPanel, DOM.productivityPanel, DOM.calendarPanel];
+                const panels = [DOM.infoPanel, DOM.noisePanel, DOM.lofiPanel, DOM.historyPanel, DOM.rewardsPanel, DOM.productivityPanel];
                 panels.forEach(p => {
                     if (p === panel) {
                         p.classList.toggle('show');
-                        if (p === DOM.calendarPanel) {
-                            STATE.calendarOpen = p.classList.contains('show');
-                            if (STATE.calendarOpen) {
-                                calendarActions.renderCalendar();
-                            }
-                        }
                     } else {
                         p.classList.remove('show');
                     }
@@ -3000,7 +3019,7 @@
                 });
                 
                 DOM.calendarMenuItem.addEventListener('click', () => {
-                    soundActions.togglePanel(DOM.calendarPanel);
+                    calendarActions.toggleCalendar();
                     this.closeDropdown();
                 });
                 
@@ -3060,11 +3079,6 @@
             DOM.closeRewardsPanel.addEventListener('click', () => {
                 DOM.rewardsPanel.classList.remove('show');
             });
-            
-            DOM.closeCalendarPanel.addEventListener('click', () => {
-                DOM.calendarPanel.classList.remove('show');
-                STATE.calendarOpen = false;
-            });
 
             DOM.resetRewards.addEventListener('click', rewardActions.resetRewards);
 
@@ -3072,6 +3086,9 @@
             DOM.prevMonthBtn.addEventListener('click', () => calendarActions.changeMonth(-1));
             DOM.nextMonthBtn.addEventListener('click', () => calendarActions.changeMonth(1));
             DOM.exportCalendarBtn.addEventListener('click', calendarActions.exportCalendarData);
+            DOM.backToTimerBtn.addEventListener('click', () => {
+                DOM.calendarPage.classList.remove('show');
+            });
 
             // Dropdown menu events
             DOM.dropdownBtn.addEventListener('click', (e) => {
@@ -3083,7 +3100,7 @@
 
             document.addEventListener('click', (e) => {
                 const panels = [DOM.infoPanel, DOM.noisePanel, DOM.lofiPanel, DOM.historyPanel, 
-                               DOM.rewardsPanel, DOM.productivityPanel, DOM.calendarPanel];
+                               DOM.rewardsPanel, DOM.productivityPanel];
                 
                 if (!panels.some(panel => panel.contains(e.target)) && 
                     !DOM.dropdownBtn.contains(e.target) && 
