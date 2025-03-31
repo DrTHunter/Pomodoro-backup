@@ -1,0 +1,3158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pomodoro Timer</title>
+    <style>
+        /* === Base Styles === */
+        :root {
+            --primary-pink: #e91e63;
+            --primary-green: #4caf50;
+            --primary-purple: #9c27b0;
+            --primary-blue: #2196f3;
+            --primary-orange: #ff9800;
+            --accent-purple: #673ab7;
+            --background-gradient-1: #ffebee;
+            --background-gradient-2: #e8f5e9;
+            --background-gradient-3: #e3f2fd;
+            --background-gradient-4: #f3e5f5;
+            --work-bg: #ffebee;
+            --break-bg: #e8f5e9;
+            --work-text: #e91e63;
+            --break-text: #4caf50;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            color: #333;
+            overflow-x: hidden;
+            background: linear-gradient(-45deg, 
+                var(--background-gradient-1),
+                var(--background-gradient-2),
+                var(--background-gradient-3),
+                var(--background-gradient-4));
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            transition: background-color 0.5s ease;
+        }
+
+        body.work-mode {
+            background-color: var(--work-bg);
+            animation: none;
+        }
+
+        body.break-mode {
+            background-color: var(--break-bg);
+            animation: none;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; background-color: var(--background-gradient-1); }
+            25% { background-color: var(--background-gradient-2); }
+            50% { background-position: 100% 50%; background-color: var(--background-gradient-3); }
+            75% { background-color: var(--background-gradient-4); }
+            100% { background-position: 0% 50%; background-color: var(--background-gradient-1); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .animal-side {
+            position: fixed;
+            top: 45%;
+            transform: translateY(-50%);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .animal-left { 
+            left: 10px;
+            animation: floatLeft 15s ease-in-out infinite alternate;
+        }
+
+        .animal-right { 
+            right: 10px;
+            animation: floatRight 15s ease-in-out infinite alternate;
+        }
+
+        .animal-gif {
+            width: 160px;
+            height: auto;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+            animation: float 4s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(3deg); }
+        }
+
+        @keyframes floatLeft {
+            0% { transform: translateY(-50%) translateX(0); }
+            100% { transform: translateY(-50%) translateX(20px); }
+        }
+
+        @keyframes floatRight {
+            0% { transform: translateY(-50%) translateX(0); }
+            100% { transform: translateY(-50%) translateX(-20px); }
+        }
+
+        .container {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            max-width: 800px;
+            width: 90%;
+            backdrop-filter: blur(5px);
+            position: relative;
+            z-index: 2;
+        }
+
+        h1 {
+            color: var(--primary-pink);
+            margin-top: 0;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            font-weight: 600;
+        }
+
+        .header-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .timer-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin: 20px auto;
+        }
+
+        .timer-display {
+            font-size: 5em;
+            font-weight: bold;
+            color: var(--primary-purple);
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.1);
+            font-family: 'Courier New', monospace;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2;
+            transition: none; /* Remove transition to prevent movement during celebration */
+            width: 100%;
+            text-align: center;
+        }
+
+        .timer-progress {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: conic-gradient(var(--primary-blue) 0%, transparent 0%);
+            z-index: 1;
+        }
+
+        .timer-circle {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 10px solid rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 12px 25px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        #start { background-color: var(--primary-green); color: white; }
+        #stop { background-color: #f44336; color: white; display: none; }
+        #reset { background-color: var(--primary-blue); color: white; }
+
+        .quick-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .quick-btn {
+            padding: 10px 15px;
+            background-color: var(--primary-orange);
+            color: white;
+        }
+
+        .mode-btn {
+            padding: 10px 20px;
+            font-size: 1em;
+        }
+
+        #setWorkMode { background-color: var(--primary-pink); color: white; }
+        #setBreakMode { background-color: var(--primary-green); color: white; }
+
+        .tracking {
+            margin-top: 30px;
+            background-color: rgba(255, 255, 255, 0.7);
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 15px;
+        }
+
+        .stat-box {
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 15px;
+            border-radius: 8px;
+            min-width: 120px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .stat-box div:first-child {
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 1em;
+        }
+
+        .stat-box div:last-child {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: var(--primary-purple);
+        }
+
+        .reset-tracking-btn {
+            background-color: var(--primary-orange);
+            color: white;
+            margin: 10px auto;
+            display: block;
+        }
+
+        .notes-container {
+            margin-top: 20px;
+        }
+
+        .notes-column {
+            background-color: rgba(255, 255, 255, 0.7);
+            padding: 15px;
+            border-radius: 10px;
+            min-height: 200px;
+        }
+
+        .notes-column h3 {
+            margin-top: 0;
+            color: white;
+            padding: 8px;
+            border-radius: 5px;
+            background-color: var(--primary-purple);
+        }
+
+        .save-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 80px;
+            padding: 10px;
+            border-radius: 8px;
+            border: 2px solid var(--primary-purple);
+            resize: vertical;
+            font-family: inherit;
+            margin-bottom: 10px;
+        }
+
+        .note-list {
+            text-align: left;
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 10px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 8px;
+        }
+
+        .note-item {
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .work-note { border-left: 4px solid var(--primary-pink); }
+        .break-note { border-left: 4px solid var(--primary-green); }
+
+        .note-time {
+            font-weight: bold;
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .note-text { margin: 5px 0; }
+
+        .note-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 5px;
+            margin-top: 5px;
+        }
+
+        .note-action-btn {
+            padding: 3px 8px;
+            font-size: 0.8em;
+            border-radius: 4px;
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+        }
+
+        .note-action-btn:hover { background-color: #e0e0e0; }
+
+        .notes-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+
+        .copy-notes-btn {
+            background-color: var(--primary-purple);
+            color: white;
+        }
+
+        .delete-all-notes-btn {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .mode-indicator {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+            font-weight: bold;
+            padding: 8px 15px;
+            border-radius: 50px;
+            display: inline-block;
+        }
+
+        .work-mode { background-color: var(--work-bg); color: var(--work-text); }
+        .break-mode { background-color: var(--break-bg); color: var(--break-text); }
+
+        /* Top right dropdown menu */
+        .dropdown-menu {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+        }
+
+        .dropdown-btn {
+            background-color: var(--accent-purple);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1.5em;
+        }
+
+        .dropdown-btn:hover { 
+            transform: scale(1.1); 
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: white;
+            min-width: 200px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            border-radius: 10px;
+            z-index: 101;
+        }
+
+        .dropdown-content.show {
+            display: block;
+        }
+
+        .dropdown-item {
+            padding: 12px 16px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            color: #333;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f1f1f1;
+        }
+
+        .dropdown-item i {
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+
+        .panel {
+            position: fixed;
+            background-color: white;
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            display: none;
+            max-height: 80vh;
+            overflow-y: auto;
+            z-index: 101;
+            right: 20px;
+            width: 350px;
+        }
+
+        .panel.show { 
+            display: block;
+            max-height: 80vh;
+            height: auto;
+        }
+
+        .info-panel {
+            top: 90px;
+            left: 20px;
+            width: 350px;
+            max-height: 80vh;
+            right: auto;
+            bottom: auto;
+        }
+
+        .info-panel h3 {
+            color: var(--accent-purple);
+            margin-top: 0;
+        }
+
+        .info-panel p {
+            text-align: left;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+        }
+
+        .info-panel ul {
+            text-align: left;
+            padding-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        .productivity-panel {
+            top: 90px;
+            left: 20px;
+            width: 350px;
+            max-height: 80vh;
+            display: none;
+            right: auto;
+            bottom: auto;
+        }
+
+        .productivity-panel h3 {
+            color: var(--accent-purple);
+            margin-top: 0;
+        }
+
+        .productivity-panel p {
+            text-align: left;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+        }
+
+        .productivity-panel ul {
+            text-align: left;
+            padding-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        .close-panel-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: none;
+            border: none;
+            font-size: 1.2em;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .noise-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .noise-play-btn {
+            background-color: var(--accent-purple);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        .noise-option {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .noise-option:hover { background-color: #f5f5f5; }
+        .noise-option.active { background-color: #e1bee7; }
+
+        .noise-option input {
+            margin-right: 10px;
+            width: auto;
+        }
+
+        .noise-option label { flex: 1; cursor: pointer; }
+
+        .volume-control { width: 100%; margin-top: 10px; }
+
+        .lofi-channel {
+            display: block;
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            background-color: #f5f5f5;
+            color: #333;
+            text-decoration: none;
+            transition: background-color 0.2s;
+        }
+
+        .lofi-channel:hover { background-color: #e0e0e0; }
+
+        .lofi-channel img {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+
+        .donate-btn {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background-color: #ff5722;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 100;
+            transition: all 0.3s;
+            text-decoration: none;
+            font-size: 1em;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .donate-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+            background-color: #ff7043;
+        }
+
+        .history-item {
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            border-left: 4px solid var(--primary-purple);
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .history-type {
+            font-weight: bold;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+        .work-history { background-color: var(--work-bg); color: var(--work-text); }
+        .break-history { background-color: var(--break-bg); color: var(--break-text); }
+
+        .history-time {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .history-duration {
+            font-weight: bold;
+        }
+
+        .history-notes {
+            margin-top: 5px;
+            padding: 5px;
+            background-color: white;
+            border-radius: 4px;
+        }
+
+        .history-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 5px;
+            margin-top: 5px;
+        }
+
+        .history-action-btn {
+            padding: 3px 8px;
+            font-size: 0.8em;
+            border-radius: 4px;
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+        }
+
+        .history-action-btn:hover { background-color: #e0e0e0; }
+
+        .history-controls {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .clear-history-btn {
+            background-color: #f44336;
+            color: white;
+            padding: 8px 15px;
+            margin-top: 10px;
+        }
+
+        .export-btn {
+            background-color: var(--primary-blue);
+            color: white;
+            padding: 8px 15px;
+            margin-top: 10px;
+        }
+
+        .editable {
+            border: 1px dashed #ccc;
+            padding: 2px;
+            min-height: 1em;
+        }
+
+        .editable:focus {
+            outline: none;
+            border: 1px solid var(--primary-blue);
+            background-color: #f5f9ff;
+        }
+
+        .reward-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+
+        .reward-icon {
+            font-size: 1.5em;
+            margin-right: 10px;
+            width: 40px;
+            text-align: center;
+        }
+
+        .reward-details {
+            flex: 1;
+        }
+
+        .reward-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .reward-progress {
+            height: 10px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: var(--primary-green);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .reward-status {
+            font-size: 0.8em;
+            color: #666;
+            margin-top: 3px;
+        }
+
+        .reward-earned {
+            background-color: #e8f5e9;
+            border-left: 4px solid var(--primary-green);
+        }
+
+        .reward-emoji {
+            font-size: 1.2em;
+            margin-left: 10px;
+        }
+
+        .confetti-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            opacity: 0;
+        }
+
+        .reward-tabs {
+            display: flex;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .reward-tab {
+            padding: 8px 15px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .reward-tab.active {
+            border-bottom: 2px solid var(--accent-purple);
+            color: var(--accent-purple);
+            font-weight: bold;
+        }
+
+        .reward-tab-content {
+            display: none;
+        }
+
+        .reward-tab-content.active {
+            display: block;
+        }
+
+        .reward-controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+
+        .reset-rewards-btn {
+            background-color: var(--primary-orange);
+            color: white;
+        }
+
+        .delete-history-btn {
+            background-color: #f44336;
+            color: white;
+        }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
+
+        @keyframes bigCelebration {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.5); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 0; }
+        }
+
+        .big-reward {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 10em;
+            z-index: 2000;
+            animation: bigCelebration 2s ease-out forwards;
+            pointer-events: none;
+        }
+
+        /* Calendar styles */
+        .calendar-panel {
+            position: fixed;
+            background-color: white;
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            display: none;
+            max-height: 80vh;
+            overflow-y: auto;
+            z-index: 101;
+            width: 350px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .calendar-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: var(--accent-purple);
+        }
+
+        .calendar-nav {
+            display: flex;
+            gap: 10px;
+            margin-left: 20px; /* Added to move arrows left */
+        }
+
+        .calendar-nav button {
+            background: none;
+            border: none;
+            font-size: 1.2em;
+            cursor: pointer;
+            color: var(--accent-purple);
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+        }
+
+        .calendar-day-header {
+            text-align: center;
+            font-weight: bold;
+            padding: 5px;
+            color: var(--accent-purple);
+        }
+
+        .calendar-day {
+            text-align: center;
+            padding: 8px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .calendar-day:hover {
+            background-color: #f0f0f0;
+        }
+
+        .calendar-day.empty {
+            visibility: hidden;
+        }
+
+        .calendar-day.today {
+            background-color: var(--accent-purple);
+            color: white;
+            font-weight: bold;
+        }
+
+        .calendar-day.has-sessions {
+            background-color: #e1bee7;
+            font-weight: bold;
+        }
+
+        .calendar-day.selected {
+            background-color: var(--primary-blue);
+            color: white;
+        }
+
+        .calendar-sessions {
+            margin-top: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .calendar-session-item {
+            padding: 8px;
+            margin-bottom: 5px;
+            border-radius: 5px;
+            background-color: #f5f5f5;
+        }
+
+        .calendar-session-item.work {
+            border-left: 3px solid var(--primary-pink);
+        }
+
+        .calendar-session-item.break {
+            border-left: 3px solid var(--primary-green);
+        }
+
+        .calendar-session-time {
+            font-size: 0.8em;
+            color: #666;
+        }
+
+        .calendar-session-duration {
+            font-weight: bold;
+        }
+
+        .calendar-session-notes {
+            margin-top: 3px;
+            font-size: 0.9em;
+        }
+
+        .calendar-export-btn {
+            background-color: var(--primary-blue);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            .dropdown-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2em;
+            }
+            
+            .panel {
+                width: 90%;
+                max-width: 350px;
+                right: auto;
+                left: 50%;
+                transform: translateX(-50%);
+                top: 50px;
+            }
+            
+            .info-panel, .productivity-panel {
+                left: 50%;
+                transform: translateX(-50%);
+                width: 90%;
+                max-width: 350px;
+            }
+            
+            .timer-container {
+                width: 250px;
+                height: 250px;
+            }
+            
+            .timer-display {
+                font-size: 4em;
+            }
+            
+            .quick-buttons {
+                flex-wrap: wrap;
+            }
+            
+            .quick-btn {
+                padding: 8px 12px;
+                font-size: 0.9em;
+            }
+            
+            /* Center tab bubbles on mobile */
+            .reward-tabs {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+            
+            .reward-tab {
+                padding: 8px 10px;
+                font-size: 0.9em;
+            }
+            
+            /* Make rewards panel taller on desktop */
+            @media (min-width: 769px) {
+                #rewardsPanel {
+                    height: 500px;
+                }
+            }
+            
+            /* Show rewards on mobile */
+            @media (max-width: 768px) {
+                #rewardsPanel {
+                    max-height: 70vh;
+                    height: auto;
+                }
+            }
+
+            /* Remove close button from calendar panel */
+            #closeCalendarPanel {
+                display: none;
+            }
+        }
+
+        /* Desktop specific styles */
+        @media (min-width: 769px) {
+            .panel {
+                top: 90px;
+                right: 20px;
+                left: auto;
+                transform: none;
+            }
+            
+            .calendar-panel {
+                top: 90px;
+                left: auto;
+                right: 20px;
+                transform: none;
+            }
+        }
+
+        /* Negative timer styling */
+        .negative-timer {
+            color: #f44336 !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="animal-side animal-left">
+        <img class="animal-gif" id="leftAnimalGif" src="assets/working-dog-animation.gif" alt="Working animal">
+    </div>
+
+    <!-- Top right dropdown menu -->
+    <div class="dropdown-menu">
+        <div class="dropdown-btn" id="dropdownBtn">☰</div>
+        <div class="dropdown-content" id="dropdownContent">
+            <div class="dropdown-item" id="infoMenuItem">
+                <i>ℹ️</i> Info
+            </div>
+            <div class="dropdown-item" id="productivityMenuItem">
+                <i>📈</i> Productivity
+            </div>
+            <div class="dropdown-item" id="noiseMenuItem">
+                <i>🎵</i> Background Sounds
+            </div>
+            <div class="dropdown-item" id="lofiMenuItem">
+                <i>🎧</i> LoFi Channels
+            </div>
+            <div class="dropdown-item" id="historyMenuItem">
+                <i>📊</i> Session History
+            </div>
+            <div class="dropdown-item" id="rewardsMenuItem">
+                <i>🏆</i> Rewards
+            </div>
+            <div class="dropdown-item" id="calendarMenuItem">
+                <i>📅</i> Calendar
+            </div>
+            <div class="dropdown-item" id="donateMenuItem">
+                <i>☕</i> Buy Creator a Coffee
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1>Pomodoro Timer</h1>
+        
+        <div class="header-buttons">
+            <button class="mode-btn" id="setWorkMode">Set Work Mode</button>
+            <button class="mode-btn" id="setBreakMode">Set Break Mode</button>
+        </div>
+        
+        <div class="mode-indicator" id="modeIndicator">Work Time</div>
+        
+        <div class="timer-container">
+            <div class="timer-progress" id="timerProgress"></div>
+            <div class="timer-circle"></div>
+            <div class="timer-display" id="timer" contenteditable="true">25:00</div>
+        </div>
+        
+        <div class="buttons">
+            <button id="start">Start</button>
+            <button id="stop">Stop</button>
+            <button id="reset">Reset</button>
+        </div>
+        
+        <div class="quick-buttons">
+            <button class="quick-btn" id="work25">Work (25:00)</button>
+            <button class="quick-btn" id="break5">Break (5:00)</button>
+            <button class="quick-btn" id="break30">Long Break (30:00)</button>
+        </div>
+        
+        <div class="tracking">
+            <h2>Tracking</h2>
+            
+            <div class="stats">
+                <div class="stat-box">
+                    <div>Work Time:</div>
+                    <div id="totalWork">00:00:00</div>
+                </div>
+                <div class="stat-box">
+                    <div>Break Time:</div>
+                    <div id="totalBreak">00:00:00</div>
+                </div>
+            </div>
+            
+            <button id="resetTracking" class="reset-tracking-btn">Reset Tracking Time</button>
+            
+            <div class="notes-container">
+                <div class="notes-column">
+                    <h3>Session Notes</h3>
+                    <textarea id="noteInput" placeholder="Add notes about your session..."></textarea>
+                    <div class="save-buttons">
+                        <button id="saveWorkNote" class="quick-btn" style="background-color: var(--primary-pink);">Save Work Note</button>
+                        <button id="saveBreakNote" class="quick-btn" style="background-color: var(--primary-green);">Save Break Note</button>
+                    </div>
+                    <div class="notes-actions">
+                        <button id="copyNotes" class="copy-notes-btn">Copy All Notes</button>
+                        <button id="deleteAllNotes" class="delete-all-notes-btn">Delete All Notes</button>
+                    </div>
+                    <div class="note-list" id="noteList"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="animal-side animal-right">
+        <img class="animal-gif" id="rightAnimalGif" src="assets/working-dog-animation.gif" alt="Working animal">
+    </div>
+
+    <!-- Productivity Info Panel -->
+    <div class="panel productivity-panel" id="productivityPanel">
+        <button class="close-panel-btn" id="closeProductivityPanel">×</button>
+        <h3>Why Track Productivity?</h3>
+        <p>Tracking your work time and accomplishments provides concrete data to demonstrate your value to your organization.</p>
+        
+        <h4>Benefits for Performance Reviews:</h4>
+        <ul>
+            <li><strong>Quantify your contributions</strong> with exact hours worked and tasks completed</li>
+            <li><strong>Show efficiency improvements</strong> over time with historical data</li>
+            <li><strong>Document your focus</strong> - time tracking shows dedication to important tasks</li>
+            <li><strong>Identify productivity patterns</strong> to optimize your work habits</li>
+        </ul>
+        
+        <h4>How to Present for Raises:</h4>
+        <ul>
+            <li><strong>Show consistent productivity</strong> with your tracked work hours</li>
+            <li><strong>Highlight completed projects</strong> from your notes with time invested</li>
+            <li><strong>Demonstrate work-life balance</strong> with proper break tracking</li>
+            <li><strong>Show initiative</strong> by presenting your self-tracking system</li>
+            <li><strong>Connect to business outcomes</strong> - link your time to measurable results</li>
+        </ul>
+        
+        <p>This data provides objective evidence to support your case for career advancement.</p>
+    </div>
+
+    <!-- Info Panel -->
+    <div class="panel info-panel" id="infoPanel">
+        <button class="close-panel-btn" id="closeInfoPanel">×</button>
+        <h3>About Pomodoro Technique</h3>
+        <p>The Pomodoro Technique is a time management method developed by Francesco Cirillo in the late 1980s.</p>
+        
+        <h4>How to Use This Timer:</h4>
+        <ol>
+            <li><strong>Choose a task</strong> to focus on</li>
+            <li><strong>Start the 25-minute timer</strong> (work session)</li>
+            <li>Work focused until the timer rings</li>
+            <li>Take a <strong>5-minute break</strong></li>
+            <li>After 4 work sessions, take a <strong>30-minute break</strong></li>
+            <li><strong>Change tasks periodically</strong> to ensure too much time isn't spent on one task</li>
+        </ol>
+        
+        <h4>Key Productivity Tips:</h4>
+        <ul>
+            <li>Switch tasks periodically to maintain fresh focus</li>
+            <li>Use work notes to track different tasks</li>
+            <li>During breaks, completely disengage from work</li>
+            <li>Adjust timer lengths based on task complexity</li>
+            <li>Use the 5-minute breaks to stretch and refresh</li>
+        </ul>
+    </div>
+
+    <!-- Noise Panel -->
+    <div class="panel" id="noisePanel">
+        <button class="close-panel-btn" id="closeNoisePanel">×</button>
+        <h3 style="margin-top: 0; color: var(--accent-purple);">Background Sounds</h3>
+        <div class="noise-controls">
+            <button class="noise-play-btn" id="noisePlayBtn">⏸️</button>
+            <span id="nowPlaying">No sound selected</span>
+        </div>
+        <div class="noise-option">
+            <input type="radio" id="noise1" name="backgroundNoise" value="rain">
+            <label for="noise1">Rainfall</label>
+        </div>
+        <div class="noise-option">
+            <input type="radio" id="noise2" name="backgroundNoise" value="forest">
+            <label for="noise2">Forest Sounds</label>
+        </div>
+        <div class="noise-option">
+            <input type="radio" id="noise3" name="backgroundNoise" value="waves">
+            <label for="noise3">Ocean Waves</label>
+        </div>
+        <div class="noise-option">
+            <input type="radio" id="noise4" name="backgroundNoise" value="birds">
+            <label for="noise4">Bird Songs</label>
+        </div>
+        <div class="noise-option">
+            <input type="radio" id="noise5" name="backgroundNoise" value="whitenoise">
+            <label for="noise5">White Noise</label>
+        </div>
+        <div class="noise-option">
+            <input type="radio" id="noise6" name="backgroundNoise" value="coffee">
+            <label for="noise6">Coffee Shop</label>
+        </div>
+        <div class="noise-option">
+            <input type="radio" id="noise7" name="backgroundNoise" value="none" checked>
+            <label for="noise7">None</label>
+        </div>
+        <input type="range" min="0" max="1" step="0.1" value="0.5" class="volume-control" id="volumeControl">
+        <div style="text-align: center; margin-top: 5px; font-size: 0.8em;">Volume</div>
+    </div>
+
+    <!-- LoFi Panel -->
+    <div class="panel" id="lofiPanel">
+        <button class="close-panel-btn" id="closeLofiPanel">×</button>
+        <h3 style="margin-top: 0; color: var(--accent-purple);">LoFi Channels</h3>
+        <a href="https://www.youtube.com/watch?v=jfKfPfyJRdk" target="_blank" class="lofi-channel">
+            <img src="https://i.ytimg.com/vi/jfKfPfyJRdk/hqdefault.jpg" alt="LoFi Girl">
+            LoFi Girl
+        </a>
+        <a href="https://www.youtube.com/watch?v=rUxyKA_-grg" target="_blank" class="lofi-channel">
+            <img src="https://i.ytimg.com/vi/rUxyKA_-grg/hqdefault.jpg" alt="Chillhop">
+            Chillhop Music
+        </a>
+        <a href="https://www.youtube.com/watch?v=4xDzrJKXOOY" target="_blank" class="lofi-channel">
+            <img src="https://i.ytimg.com/vi/4xDzrJKXOOY/hqdefault.jpg" alt="Ambient Worlds">
+            Ambient Worlds
+        </a>
+        <a href="https://www.youtube.com/watch?v=7NOSDKb0HlU" target="_blank" class="lofi-channel">
+            <img src="https://i.ytimg.com/vi/7NOSDKb0HlU/hqdefault.jpg" alt="Chill Cow">
+            Chill Cow
+        </a>
+    </div>
+
+    <!-- History Panel -->
+    <div class="panel" id="historyPanel">
+        <button class="close-panel-btn" id="closeHistoryPanel">×</button>
+        <h3 style="margin-top: 0; color: var(--accent-purple);">Session History</h3>
+        <div class="history-controls">
+            <button id="exportHistory" class="export-btn">Export History</button>
+            <button id="clearHistory" class="clear-history-btn">Clear History</button>
+        </div>
+        <div id="historyList"></div>
+    </div>
+
+    <!-- Rewards Panel -->
+    <div class="panel" id="rewardsPanel">
+        <button class="close-panel-btn" id="closeRewardsPanel">×</button>
+        <h3 style="margin-top: 0; color: var(--accent-purple);">Your Rewards</h3>
+        
+        <div class="reward-tabs">
+            <div class="reward-tab active" data-tab="daily">Daily</div>
+            <div class="reward-tab" data-tab="weekly">Weekly</div>
+            <div class="reward-tab" data-tab="monthly">Monthly</div>
+            <div class="reward-tab" data-tab="history">History</div>
+        </div>
+        
+        <div class="reward-tab-content active" id="dailyRewards">
+            <div id="dailyRewardsList"></div>
+        </div>
+        
+        <div class="reward-tab-content" id="weeklyRewards">
+            <div id="weeklyRewardsList"></div>
+        </div>
+        
+        <div class="reward-tab-content" id="monthlyRewards">
+            <div id="monthlyRewardsList"></div>
+        </div>
+        
+        <div class="reward-tab-content" id="historyRewards">
+            <div id="historyRewardsList"></div>
+        </div>
+        
+        <div class="reward-controls">
+            <button id="resetRewards" class="reset-rewards-btn">Reset Rewards</button>
+        </div>
+    </div>
+
+    <!-- Calendar Panel -->
+    <div class="panel calendar-panel" id="calendarPanel">
+        <button class="close-panel-btn" id="closeCalendarPanel">×</button>
+        <div class="calendar-header">
+            <div class="calendar-title" id="calendarTitle">March 2023</div>
+            <div class="calendar-nav">
+                <button id="prevMonthBtn">&lt;</button>
+                <button id="nextMonthBtn">&gt;</button>
+            </div>
+        </div>
+        
+        <div class="calendar-grid" id="calendarGrid">
+            <!-- Calendar headers -->
+            <div class="calendar-day-header">Sun</div>
+            <div class="calendar-day-header">Mon</div>
+            <div class="calendar-day-header">Tue</div>
+            <div class="calendar-day-header">Wed</div>
+            <div class="calendar-day-header">Thu</div>
+            <div class="calendar-day-header">Fri</div>
+            <div class="calendar-day-header">Sat</div>
+            
+            <!-- Calendar days will be inserted here by JavaScript -->
+        </div>
+        
+        <div class="calendar-sessions" id="calendarSessions">
+            <p style="text-align: center; padding: 20px; color: #666;">Select a date to view sessions</p>
+        </div>
+        
+        <button id="exportCalendarBtn" class="calendar-export-btn">Export Calendar Data</button>
+    </div>
+
+    <!-- Confetti Container -->
+    <div class="confetti-container" id="confettiContainer"></div>
+
+    <audio id="alarmSound" src="https://assets.mixkit.co/sfx/preview/mixkit-alarm-digital-clock-beep-989.mp3" preload="auto"></audio>
+    <audio id="applauseSound" src="https://assets.mixkit.co/sfx/preview/mixkit-achievement-bell-600.mp3" preload="auto"></audio>
+    <audio id="rainSound" loop src="https://assets.mixkit.co/sfx/preview/mixkit-rain-ambience-1193.mp3" preload="auto"></audio>
+    <audio id="forestSound" loop src="https://assets.mixkit.co/sfx/preview/mixkit-forest-ambience-1683.mp3" preload="auto"></audio>
+    <audio id="wavesSound" loop src="https://assets.mixkit.co/sfx/preview/mixkit-waves-coming-to-shore-1934.mp3" preload="auto"></audio>
+    <audio id="birdsSound" loop src="https://assets.mixkit.co/sfx/preview/mixkit-birds-chirping-near-the-river-2466.mp3" preload="auto"></audio>
+    <audio id="whiteNoiseSound" loop src="https://assets.mixkit.co/sfx/preview/mixkit-wind-ambience-594.mp3" preload="auto"></audio>
+    <audio id="coffeeSound" loop src="https://assets.mixkit.co/sfx/preview/mixkit-busy-coffee-shop-1655.mp3" preload="auto"></audio>
+    <script>
+        // ========== DOM Elements ==========
+        const DOM = {
+            timer: document.getElementById('timer'),
+            timerProgress: document.getElementById('timerProgress'),
+            startButton: document.getElementById('start'),
+            stopButton: document.getElementById('stop'),
+            resetButton: document.getElementById('reset'),
+            work25Button: document.getElementById('work25'),
+            break5Button: document.getElementById('break5'),
+            break30Button: document.getElementById('break30'),
+            setWorkModeButton: document.getElementById('setWorkMode'),
+            setBreakModeButton: document.getElementById('setBreakMode'),
+            totalWorkDisplay: document.getElementById('totalWork'),
+            totalBreakDisplay: document.getElementById('totalBreak'),
+            resetTracking: document.getElementById('resetTracking'),
+            noteInput: document.getElementById('noteInput'),
+            saveWorkNoteButton: document.getElementById('saveWorkNote'),
+            saveBreakNoteButton: document.getElementById('saveBreakNote'),
+            copyNotesButton: document.getElementById('copyNotes'),
+            deleteAllNotes: document.getElementById('deleteAllNotes'),
+            noteList: document.getElementById('noteList'),
+            alarmSound: document.getElementById('alarmSound'),
+            applauseSound: document.getElementById('applauseSound'),
+            modeIndicator: document.getElementById('modeIndicator'),
+            nowPlaying: document.getElementById('nowPlaying'),
+            volumeControl: document.getElementById('volumeControl'),
+            rainSound: document.getElementById('rainSound'),
+            forestSound: document.getElementById('forestSound'),
+            wavesSound: document.getElementById('wavesSound'),
+            birdsSound: document.getElementById('birdsSound'),
+            whiteNoiseSound: document.getElementById('whiteNoiseSound'),
+            coffeeSound: document.getElementById('coffeeSound'),
+            noiseOptions: document.querySelectorAll('.noise-option input'),
+            infoPanel: document.getElementById('infoPanel'),
+            historyList: document.getElementById('historyList'),
+            clearHistory: document.getElementById('clearHistory'),
+            exportHistory: document.getElementById('exportHistory'),
+            dailyRewardsList: document.getElementById('dailyRewardsList'),
+            weeklyRewardsList: document.getElementById('weeklyRewardsList'),
+            monthlyRewardsList: document.getElementById('monthlyRewardsList'),
+            historyRewardsList: document.getElementById('historyRewardsList'),
+            resetRewards: document.getElementById('resetRewards'),
+            confettiContainer: document.getElementById('confettiContainer'),
+            leftAnimalGif: document.getElementById('leftAnimalGif'),
+            rightAnimalGif: document.getElementById('rightAnimalGif'),
+            productivityPanel: document.getElementById('productivityPanel'),
+            closeProductivityPanel: document.getElementById('closeProductivityPanel'),
+            closeInfoPanel: document.getElementById('closeInfoPanel'),
+            closeNoisePanel: document.getElementById('closeNoisePanel'),
+            closeLofiPanel: document.getElementById('closeLofiPanel'),
+            closeHistoryPanel: document.getElementById('closeHistoryPanel'),
+            closeRewardsPanel: document.getElementById('closeRewardsPanel'),
+            closeCalendarPanel: document.getElementById('closeCalendarPanel'),
+            body: document.body,
+            dropdownBtn: document.getElementById('dropdownBtn'),
+            dropdownContent: document.getElementById('dropdownContent'),
+            infoMenuItem: document.getElementById('infoMenuItem'),
+            productivityMenuItem: document.getElementById('productivityMenuItem'),
+            noiseMenuItem: document.getElementById('noiseMenuItem'),
+            lofiMenuItem: document.getElementById('lofiMenuItem'),
+            historyMenuItem: document.getElementById('historyMenuItem'),
+            rewardsMenuItem: document.getElementById('rewardsMenuItem'),
+            calendarMenuItem: document.getElementById('calendarMenuItem'),
+            donateMenuItem: document.getElementById('donateMenuItem'),
+            noisePlayBtn: document.getElementById('noisePlayBtn'),
+            noisePanel: document.getElementById('noisePanel'),
+            lofiPanel: document.getElementById('lofiPanel'),
+            historyPanel: document.getElementById('historyPanel'),
+            rewardsPanel: document.getElementById('rewardsPanel'),
+            calendarPanel: document.getElementById('calendarPanel'),
+            calendarTitle: document.getElementById('calendarTitle'),
+            calendarGrid: document.getElementById('calendarGrid'),
+            calendarSessions: document.getElementById('calendarSessions'),
+            prevMonthBtn: document.getElementById('prevMonthBtn'),
+            nextMonthBtn: document.getElementById('nextMonthBtn'),
+            exportCalendarBtn: document.getElementById('exportCalendarBtn')
+        };
+
+        // ========== State Management ==========
+        const STATE = {
+            timer: null,
+            isRunning: false,
+            isWorkMode: true,
+            totalSeconds: 25 * 60,
+            initialSeconds: 25 * 60,
+            totalWorkSeconds: 0,
+            totalBreakSeconds: 0,
+            sessionStartTime: null,
+            currentNoise: null,
+            currentVolume: 0.5,
+            isNoisePlaying: false,
+            currentNoiseType: 'none',
+            noiseNames: {
+                'rain': 'Rainfall',
+                'forest': 'Forest Sounds',
+                'waves': 'Ocean Waves',
+                'birds': 'Bird Songs',
+                'whitenoise': 'White Noise',
+                'coffee': 'Coffee Shop',
+                'none': 'No sound selected'
+            },
+            sessionHistory: [],
+            notes: [],
+            rewards: {
+                daily: [
+                    {
+                        id: 'daily_1',
+                        title: 'Morning Starter',
+                        description: 'Complete 1 work session before noon',
+                        icon: '🌅',
+                        goal: 1,
+                        current: 0,
+                        reward: '☕',
+                        earned: false
+                    },
+                    {
+                        id: 'daily_2',
+                        title: 'Daily Goal',
+                        description: 'Complete 4 work sessions in a day',
+                        icon: '✅',
+                        goal: 4,
+                        current: 0,
+                        reward: '🏅',
+                        earned: false
+                    },
+                    {
+                        id: 'daily_3',
+                        title: 'Productivity Master',
+                        description: 'Complete 8 work sessions in a day',
+                        icon: '🚀',
+                        goal: 8,
+                        current: 0,
+                        reward: '🌟',
+                        earned: false
+                    },
+                    {
+                        id: 'daily_4',
+                        title: 'Early Bird',
+                        description: 'Complete a work session before 8 AM',
+                        icon: '🐦',
+                        goal: 1,
+                        current: 0,
+                        reward: '🌞',
+                        earned: false
+                    },
+                    {
+                        id: 'daily_5',
+                        title: 'Night Owl',
+                        description: 'Complete a work session after 8 PM',
+                        icon: '🦉',
+                        goal: 1,
+                        current: 0,
+                        reward: '🌙',
+                        earned: false
+                    }
+                ],
+                weekly: [
+                    {
+                        id: 'weekly_1',
+                        title: 'Week Starter',
+                        description: 'Complete 5 work sessions by Wednesday',
+                        icon: '📅',
+                        goal: 5,
+                        current: 0,
+                        reward: '🌱',
+                        earned: false
+                    },
+                    {
+                        id: 'weekly_2',
+                        title: 'Weekly Goal',
+                        description: 'Complete 20 work sessions this week',
+                        icon: '🎯',
+                        goal: 20,
+                        current: 0,
+                        reward: '🏆',
+                        earned: false
+                    },
+                    {
+                        id: 'weekly_3',
+                        title: 'Ultimate Focus',
+                        description: 'Complete 35 work sessions this week',
+                        icon: '🧠',
+                        goal: 35,
+                        current: 0,
+                        reward: '💎',
+                        earned: false
+                    },
+                    {
+                        id: 'weekly_4',
+                        title: 'Consistency King',
+                        description: 'Complete at least 3 sessions every day for a week',
+                        icon: '👑',
+                        goal: 7,
+                        current: 0,
+                        reward: '🏅',
+                        earned: false
+                    },
+                    {
+                        id: 'weekly_5',
+                        title: 'Weekend Warrior',
+                        description: 'Complete 5 work sessions on weekend days',
+                        icon: '⚔️',
+                        goal: 5,
+                        current: 0,
+                        reward: '🛡️',
+                        earned: false
+                    }
+                ],
+                monthly: [
+                    {
+                        id: 'monthly_1',
+                        title: 'Month Starter',
+                        description: 'Complete 20 work sessions in first 10 days',
+                        icon: '📆',
+                        goal: 20,
+                        current: 0,
+                        reward: '🌞',
+                        earned: false
+                    },
+                    {
+                        id: 'monthly_2',
+                        title: 'Monthly Goal',
+                        description: 'Complete 80 work sessions this month',
+                        icon: '🏁',
+                        goal: 80,
+                        current: 0,
+                        reward: '🚀',
+                        earned: false
+                    },
+                    {
+                        id: 'monthly_3',
+                        title: 'Legendary Month',
+                        description: 'Complete 120 work sessions this month',
+                        icon: '🏆',
+                        goal: 120,
+                        current: 0,
+                        reward: '💎',
+                        earned: false
+                    },
+                    {
+                        id: 'monthly_4',
+                        title: 'Perfect Attendance',
+                        description: 'Complete at least 1 session every day for a month',
+                        icon: '📅',
+                        goal: 30,
+                        current: 0,
+                        reward: '✨',
+                        earned: false
+                    },
+                    {
+                        id: 'monthly_5',
+                        title: 'Balance Master',
+                        description: 'Maintain at least 20% break time ratio for the month',
+                        icon: '⚖️',
+                        goal: 1,
+                        current: 0,
+                        reward: '🧘',
+                        earned: false
+                    }
+                ]
+            },
+            completedSessions: 0,
+            breakGif: 'assets/break-animation.gif',
+            lastTrackingUpdate: 0,
+            dailyCompletedSessions: 0,
+            weeklyCompletedSessions: 0,
+            monthlyCompletedSessions: 0,
+            lastSessionDate: null,
+            rewardHistory: {
+                daily: [],
+                weekly: [],
+                monthly: []
+            },
+            calendar: {
+                currentMonth: new Date().getMonth(),
+                currentYear: new Date().getFullYear(),
+                selectedDate: null
+            },
+            calendarOpen: false // Track if calendar is open
+        };
+
+        // ========== Timer Functions ==========
+        const timerActions = {
+            start() {
+                // Parse time from the editable timer display
+                const timeParts = DOM.timer.textContent.split(':');
+                let minutes = parseInt(timeParts[0]) || 0;
+                let seconds = parseInt(timeParts[1]) || 0;
+                
+                STATE.totalSeconds = minutes * 60 + seconds;
+                
+                // Only set initialSeconds if we're starting fresh (not resuming)
+                if (!STATE.isRunning) {
+                    STATE.initialSeconds = STATE.totalSeconds;
+                }
+                
+                STATE.isRunning = true;
+                if (!STATE.sessionStartTime) {
+                    STATE.sessionStartTime = new Date();
+                }
+                STATE.lastTrackingUpdate = Date.now();
+                
+                DOM.startButton.style.display = 'none';
+                DOM.stopButton.style.display = 'inline-block';
+                
+                DOM.body.classList.remove('work-mode', 'break-mode');
+                DOM.body.classList.add(STATE.isWorkMode ? 'work-mode' : 'break-mode');
+                
+                // Update animal GIFs based on mode
+                if (STATE.isWorkMode) {
+                    DOM.leftAnimalGif.src = 'assets/working-dog-animation.gif';
+                    DOM.rightAnimalGif.src = 'assets/working-dog-animation.gif';
+                } else {
+                    DOM.leftAnimalGif.src = STATE.breakGif;
+                    DOM.rightAnimalGif.src = STATE.breakGif;
+                }
+                
+                STATE.timer = setInterval(() => {
+                    STATE.totalSeconds--;
+                    timerActions.updateDisplay();
+                    
+                    // Update progress circle
+                    const progressPercent = 100 - (STATE.totalSeconds / STATE.initialSeconds * 100);
+                    DOM.timerProgress.style.background = `conic-gradient(var(--primary-blue) ${progressPercent}%, transparent ${progressPercent}%)`;
+                    
+                    // Update tracking time in real-time
+                    const now = Date.now();
+                    const elapsedSeconds = Math.floor((now - STATE.lastTrackingUpdate) / 1000);
+                    
+                    if (elapsedSeconds >= 1) {
+                        if (STATE.isWorkMode) {
+                            STATE.totalWorkSeconds += elapsedSeconds;
+                        } else {
+                            STATE.totalBreakSeconds += elapsedSeconds;
+                        }
+                        STATE.lastTrackingUpdate = now;
+                        trackingActions.updateDisplay();
+                    }
+                    
+                    if (STATE.totalSeconds === 0) {
+                        // Celebration at 0
+                        DOM.alarmSound.play();
+                        celebrationActions.triggerCelebration();
+                    }
+                    
+                    if (STATE.totalSeconds <= 0) {
+                        // Keep counting negative
+                        if (Math.abs(STATE.totalSeconds) % 60 === 0) {
+                            // Every minute after 0, add to tracking
+                            const now = Date.now();
+                            const elapsedSeconds = Math.floor((now - STATE.lastTrackingUpdate) / 1000);
+                            
+                            if (elapsedSeconds >= 1) {
+                                if (STATE.isWorkMode) {
+                                    STATE.totalWorkSeconds += elapsedSeconds;
+                                } else {
+                                    STATE.totalBreakSeconds += elapsedSeconds;
+                                }
+                                STATE.lastTrackingUpdate = now;
+                                trackingActions.updateDisplay();
+                            }
+                        }
+                    }
+                    
+                    // Check if we should end the session (only when coming from positive to negative)
+                    if (STATE.totalSeconds === -1) {
+                        const sessionEndTime = new Date();
+                        const sessionDuration = Math.floor((sessionEndTime - STATE.sessionStartTime) / 1000);
+                        
+                        if (STATE.isWorkMode) {
+                            STATE.totalWorkSeconds += sessionDuration;
+                            STATE.completedSessions++;
+                            rewardActions.updateSessionCounters();
+                            historyActions.addSession({
+                                type: 'work',
+                                duration: sessionDuration,
+                                notes: DOM.noteInput.value.trim() || 'Enter work/project here',
+                                timestamp: STATE.sessionStartTime
+                            });
+                            rewardActions.updateRewards('work', sessionDuration);
+                        } else {
+                            STATE.totalBreakSeconds += sessionDuration;
+                            historyActions.addSession({
+                                type: 'break',
+                                duration: sessionDuration,
+                                notes: DOM.noteInput.value.trim() || 'Enter work/project here',
+                                timestamp: STATE.sessionStartTime
+                            });
+                        }
+                        
+                        trackingActions.updateDisplay();
+                        
+                        STATE.isWorkMode = !STATE.isWorkMode;
+                        timerActions.updateModeIndicator();
+                        
+                        DOM.body.classList.remove('work-mode', 'break-mode');
+                        DOM.body.classList.add(STATE.isWorkMode ? 'work-mode' : 'break-mode');
+                        
+                        // Update animal GIFs based on new mode
+                        if (STATE.isWorkMode) {
+                            DOM.leftAnimalGif.src = 'assets/working-dog-animation.gif';
+                            DOM.rightAnimalGif.src = 'assets/working-dog-animation.gif';
+                        } else {
+                            DOM.leftAnimalGif.src = STATE.breakGif;
+                            DOM.rightAnimalGif.src = STATE.breakGif;
+                        }
+                        
+                        if (STATE.isWorkMode) {
+                            timerActions.setQuickTime(25, 0, true);
+                        } else {
+                            const lastBreakWasShort = localStorage.getItem('lastBreakWasShort') === 'true';
+                            if (lastBreakWasShort) {
+                                timerActions.setQuickTime(30, 0, false);
+                                localStorage.setItem('lastBreakWasShort', 'false');
+                            } else {
+                                timerActions.setQuickTime(5, 0, false);
+                                localStorage.setItem('lastBreakWasShort', 'true');
+                            }
+                        }
+                        
+                        // Reset the start/stop button
+                        DOM.startButton.style.display = 'inline-block';
+                        DOM.stopButton.style.display = 'none';
+                        STATE.sessionStartTime = null;
+                    }
+                }, 1000);
+            },
+
+            stop() {
+                if (STATE.isRunning) {
+                    clearInterval(STATE.timer);
+                    STATE.isRunning = false;
+                    DOM.startButton.style.display = 'inline-block';
+                    DOM.stopButton.style.display = 'none';
+                    
+                    const sessionEndTime = new Date();
+                    const sessionDuration = Math.floor((sessionEndTime - STATE.sessionStartTime) / 1000);
+                    
+                    if (STATE.isWorkMode) {
+                        STATE.totalWorkSeconds += sessionDuration;
+                        STATE.completedSessions++;
+                        rewardActions.updateSessionCounters();
+                        historyActions.addSession({
+                            type: 'work',
+                            duration: sessionDuration,
+                            notes: DOM.noteInput.value.trim() || 'Enter work/project here',
+                            timestamp: STATE.sessionStartTime
+                        });
+                        rewardActions.updateRewards('work', sessionDuration);
+                    } else {
+                        STATE.totalBreakSeconds += sessionDuration;
+                        historyActions.addSession({
+                            type: 'break',
+                            duration: sessionDuration,
+                            notes: DOM.noteInput.value.trim() || 'Enter work/project here',
+                            timestamp: STATE.sessionStartTime
+                        });
+                    }
+                    trackingActions.updateDisplay();
+                    STATE.sessionStartTime = null;
+                }
+            },
+
+            reset() {
+                timerActions.stop();
+                const timeParts = DOM.timer.textContent.split(':');
+                let minutes = parseInt(timeParts[0]) || 0;
+                let seconds = parseInt(timeParts[1]) || 0;
+                STATE.totalSeconds = minutes * 60 + seconds;
+                STATE.initialSeconds = STATE.totalSeconds;
+                DOM.timerProgress.style.background = `conic-gradient(var(--primary-blue) 0%, transparent 0%)`;
+                timerActions.updateDisplay();
+            },
+
+            updateDisplay() {
+                const minutes = Math.floor(Math.abs(STATE.totalSeconds) / 60);
+                const seconds = Math.abs(STATE.totalSeconds) % 60;
+                const sign = STATE.totalSeconds < 0 ? '-' : '';
+                DOM.timer.textContent = `${sign}${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                if (STATE.totalSeconds < 0) {
+                    DOM.timer.classList.add('negative-timer');
+                } else {
+                    DOM.timer.classList.remove('negative-timer');
+                    if (STATE.totalSeconds <= 60) {
+                        DOM.timer.style.color = '#f44336';
+                        DOM.timer.style.animation = 'pulse 1s infinite';
+                    } else if (STATE.totalSeconds <= 300) {
+                        DOM.timer.style.color = '#ff9800';
+                        DOM.timer.style.animation = 'none';
+                    } else {
+                        DOM.timer.style.color = STATE.isWorkMode ? 'var(--work-text)' : 'var(--break-text)';
+                        DOM.timer.style.animation = 'none';
+                    }
+                }
+            },
+
+            setQuickTime(minutes, seconds, workMode) {
+                timerActions.stop();
+                DOM.timer.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                STATE.totalSeconds = minutes * 60 + seconds;
+                STATE.initialSeconds = STATE.totalSeconds;
+                STATE.isWorkMode = workMode;
+                DOM.timerProgress.style.background = `conic-gradient(var(--primary-blue) 0%, transparent 0%)`;
+                timerActions.updateDisplay();
+                timerActions.updateModeIndicator();
+                
+                DOM.body.classList.remove('work-mode', 'break-mode');
+                DOM.body.classList.add(STATE.isWorkMode ? 'work-mode' : 'break-mode');
+                
+                // Update animal GIFs based on mode
+                if (STATE.isWorkMode) {
+                    DOM.leftAnimalGif.src = 'assets/working-dog-animation.gif';
+                    DOM.rightAnimalGif.src = 'assets/working-dog-animation.gif';
+                } else {
+                    DOM.leftAnimalGif.src = STATE.breakGif;
+                    DOM.rightAnimalGif.src = STATE.breakGif;
+                }
+            },
+
+            setMode(workMode) {
+                STATE.isWorkMode = workMode;
+                timerActions.updateModeIndicator();
+                
+                DOM.body.classList.remove('work-mode', 'break-mode');
+                DOM.body.classList.add(STATE.isWorkMode ? 'work-mode' : 'break-mode');
+                
+                // Update animal GIFs based on mode
+                if (STATE.isWorkMode) {
+                    DOM.leftAnimalGif.src = 'assets/working-dog-animation.gif';
+                    DOM.rightAnimalGif.src = 'assets/working-dog-animation.gif';
+                } else {
+                    DOM.leftAnimalGif.src = STATE.breakGif;
+                    DOM.rightAnimalGif.src = STATE.breakGif;
+                }
+            },
+
+            updateModeIndicator() {
+                if (STATE.isWorkMode) {
+                    DOM.modeIndicator.textContent = "Work Time";
+                    DOM.modeIndicator.className = "mode-indicator work-mode";
+                } else {
+                    DOM.modeIndicator.textContent = "Break Time";
+                    DOM.modeIndicator.className = "mode-indicator break-mode";
+                }
+            }
+        };
+
+        // ========== Celebration Functions ==========
+        const celebrationActions = {
+            triggerCelebration() {
+                DOM.applauseSound.play();
+                this.createConfetti();
+                
+                DOM.container.style.animation = 'pulse 0.5s 3';
+                setTimeout(() => {
+                    DOM.container.style.animation = '';
+                }, 1500);
+            },
+            
+            createConfetti() {
+                DOM.confettiContainer.innerHTML = '';
+                
+                for (let i = 0; i < 100; i++) {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    
+                    const colors = ['#e91e63', '#4caf50', '#2196f3', '#ff9800', '#9c27b0'];
+                    const shapes = ['circle', 'square', 'triangle'];
+                    
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.left = Math.random() * 100 + 'vw';
+                    confetti.style.width = (Math.random() * 10 + 5) + 'px';
+                    confetti.style.height = (Math.random() * 10 + 5) + 'px';
+                    confetti.style.opacity = '1';
+                    confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                    
+                    const animationDuration = Math.random() * 3 + 2;
+                    confetti.style.animation = `fall ${animationDuration}s linear forwards`;
+                    
+                    const keyframes = `
+                        @keyframes fall {
+                            to {
+                                transform: translateY(100vh) rotate(${Math.random() * 360}deg);
+                                opacity: 0;
+                            }
+                        }
+                    `;
+                    
+                    if (!document.getElementById('confetti-keyframes')) {
+                        const style = document.createElement('style');
+                        style.id = 'confetti-keyframes';
+                        style.innerHTML = keyframes;
+                        document.head.appendChild(style);
+                    }
+                    
+                    DOM.confettiContainer.appendChild(confetti);
+                    
+                    setTimeout(() => {
+                        confetti.remove();
+                    }, animationDuration * 1000);
+                }
+            },
+            
+            showBigReward(reward) {
+                const bigReward = document.createElement('div');
+                bigReward.className = 'big-reward';
+                bigReward.textContent = reward.reward;
+                document.body.appendChild(bigReward);
+                
+                setTimeout(() => {
+                    bigReward.remove();
+                }, 2000);
+            }
+        };
+
+        // ========== Tracking Functions ==========
+        const trackingActions = {
+            updateDisplay() {
+                DOM.totalWorkDisplay.textContent = trackingActions.formatTime(STATE.totalWorkSeconds);
+                DOM.totalBreakDisplay.textContent = trackingActions.formatTime(STATE.totalBreakSeconds);
+            },
+
+            formatTime(totalSeconds) {
+                const hours = Math.floor(totalSeconds / 3600);
+                const minutes = Math.floor((totalSeconds % 3600) / 60);
+                const seconds = totalSeconds % 60;
+                return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            },
+
+            resetTracking() {
+                if (confirm('Are you sure you want to reset all tracking time?')) {
+                    STATE.totalWorkSeconds = 0;
+                    STATE.totalBreakSeconds = 0;
+                    this.updateDisplay();
+                    localStorage.setItem('totalWorkSeconds', '0');
+                    localStorage.setItem('totalBreakSeconds', '0');
+                }
+            }
+        };
+
+        // ========== Reward Functions ==========
+        const rewardActions = {
+            updateSessionCounters() {
+                const now = new Date();
+                const today = now.toDateString();
+                const currentDay = now.getDay(); // 0 (Sunday) to 6 (Saturday)
+                const currentDate = now.getDate();
+                const currentMonth = now.getMonth();
+                const currentYear = now.getFullYear();
+                
+                // Check if we need to reset counters
+                if (!STATE.lastSessionDate || STATE.lastSessionDate.toDateString() !== today) {
+                    // New day, check if we need to archive yesterday's daily progress
+                    if (STATE.dailyCompletedSessions > 0) {
+                        rewardActions.archiveRewardProgress('daily', STATE.dailyCompletedSessions);
+                    }
+                    STATE.dailyCompletedSessions = 0;
+                    
+                    // Check if new week (Monday)
+                    if (currentDay === 1 || !STATE.lastSessionDate) {
+                        if (STATE.weeklyCompletedSessions > 0) {
+                            rewardActions.archiveRewardProgress('weekly', STATE.weeklyCompletedSessions);
+                        }
+                        STATE.weeklyCompletedSessions = 0;
+                    }
+                    
+                    // Check if new month
+                    if (currentDate === 1 || !STATE.lastSessionDate) {
+                        if (STATE.monthlyCompletedSessions > 0) {
+                            rewardActions.archiveRewardProgress('monthly', STATE.monthlyCompletedSessions);
+                        }
+                        STATE.monthlyCompletedSessions = 0;
+                    }
+                }
+                
+                STATE.lastSessionDate = now;
+                STATE.dailyCompletedSessions++;
+                STATE.weeklyCompletedSessions++;
+                STATE.monthlyCompletedSessions++;
+                
+                this.saveRewards();
+            },
+            
+            archiveRewardProgress(type, count) {
+                const now = new Date();
+                let periodName = '';
+                
+                if (type === 'daily') {
+                    periodName = now.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+                } else if (type === 'weekly') {
+                    const startOfWeek = new Date(now);
+                    startOfWeek.setDate(now.getDate() - now.getDay() + 1); // Get Monday of this week
+                    periodName = `Week of ${startOfWeek.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+                } else if (type === 'monthly') {
+                    periodName = now.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+                }
+                
+                STATE.rewardHistory[type].push({
+                    date: now,
+                    periodName: periodName,
+                    completedSessions: count,
+                    archivedAt: new Date()
+                });
+                
+                this.saveRewards();
+                this.renderRewardHistory();
+            },
+            
+            updateRewards(type, duration) {
+                if (type === 'work') {
+                    // Update daily rewards
+                    STATE.rewards.daily.forEach(reward => {
+                        if (!reward.earned) {
+                            reward.current = STATE.dailyCompletedSessions;
+                            if (reward.current >= reward.goal) {
+                                reward.earned = true;
+                                this.showRewardNotification(reward);
+                                celebrationActions.showBigReward(reward);
+                            }
+                        }
+                    });
+                    
+                    // Update weekly rewards
+                    STATE.rewards.weekly.forEach(reward => {
+                        if (!reward.earned) {
+                            reward.current = STATE.weeklyCompletedSessions;
+                            if (reward.current >= reward.goal) {
+                                reward.earned = true;
+                                this.showRewardNotification(reward);
+                                celebrationActions.showBigReward(reward);
+                            }
+                        }
+                    });
+                    
+                    // Update monthly rewards
+                    STATE.rewards.monthly.forEach(reward => {
+                        if (!reward.earned) {
+                            reward.current = STATE.monthlyCompletedSessions;
+                            if (reward.current >= reward.goal) {
+                                reward.earned = true;
+                                this.showRewardNotification(reward);
+                                celebrationActions.showBigReward(reward);
+                            }
+                        }
+                    });
+                }
+                
+                this.saveRewards();
+                this.renderRewards();
+            },
+            
+            showRewardNotification(reward) {
+                const notification = document.createElement('div');
+                notification.className = 'reward-notification';
+                notification.innerHTML = `
+                    <div style="background-color: #e8f5e9; padding: 15px; border-radius: 10px; 
+                        box-shadow: 0 4px 8px rgba(0,0,0,0.2); position: fixed; top: 20px; 
+                        left: 50%; transform: translateX(-50%); z-index: 1000; display: flex; 
+                        align-items: center; animation: slideIn 0.5s forwards;">
+                        <span style="font-size: 2em; margin-right: 10px;">${reward.reward}</span>
+                        <div>
+                            <div style="font-weight: bold;">Reward Unlocked!</div>
+                            <div>${reward.title}</div>
+                        </div>
+                    </div>
+                `;
+                
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.style.animation = 'slideOut 0.5s forwards';
+                    setTimeout(() => {
+                        notification.remove();
+                    }, 500);
+                }, 3000);
+                
+                if (!document.getElementById('reward-keyframes')) {
+                    const style = document.createElement('style');
+                    style.id = 'reward-keyframes';
+                    style.innerHTML = `
+                        @keyframes slideIn {
+                            from { top: -100px; opacity: 0; }
+                            to { top: 20px; opacity: 1; }
+                        }
+                        @keyframes slideOut {
+                            from { top: 20px; opacity: 1; }
+                            to { top: -100px; opacity: 0; }
+                        }
+                    `;
+                    document.head.appendChild(style);
+                }
+            },
+            
+            saveRewards() {
+                localStorage.setItem('rewards', JSON.stringify(STATE.rewards));
+                localStorage.setItem('completedSessions', STATE.completedSessions.toString());
+                localStorage.setItem('totalWorkSeconds', STATE.totalWorkSeconds.toString());
+                localStorage.setItem('dailyCompletedSessions', STATE.dailyCompletedSessions.toString());
+                localStorage.setItem('weeklyCompletedSessions', STATE.weeklyCompletedSessions.toString());
+                localStorage.setItem('monthlyCompletedSessions', STATE.monthlyCompletedSessions.toString());
+                localStorage.setItem('lastSessionDate', STATE.lastSessionDate ? STATE.lastSessionDate.getTime() : '');
+                localStorage.setItem('rewardHistory', JSON.stringify(STATE.rewardHistory));
+            },
+            
+            loadRewards() {
+                const savedRewards = localStorage.getItem('rewards');
+                if (savedRewards) {
+                    STATE.rewards = JSON.parse(savedRewards);
+                }
+                
+                STATE.completedSessions = parseInt(localStorage.getItem('completedSessions')) || 0;
+                STATE.totalWorkSeconds = parseInt(localStorage.getItem('totalWorkSeconds')) || 0;
+                STATE.dailyCompletedSessions = parseInt(localStorage.getItem('dailyCompletedSessions')) || 0;
+                STATE.weeklyCompletedSessions = parseInt(localStorage.getItem('weeklyCompletedSessions')) || 0;
+                STATE.monthlyCompletedSessions = parseInt(localStorage.getItem('monthlyCompletedSessions')) || 0;
+                
+                const lastSessionDate = localStorage.getItem('lastSessionDate');
+                if (lastSessionDate) {
+                    STATE.lastSessionDate = new Date(parseInt(lastSessionDate));
+                }
+                
+                const savedRewardHistory = localStorage.getItem('rewardHistory');
+                if (savedRewardHistory) {
+                    STATE.rewardHistory = JSON.parse(savedRewardHistory);
+                    // Convert string dates back to Date objects
+                    STATE.rewardHistory.daily = STATE.rewardHistory.daily.map(item => ({
+                        ...item,
+                        date: new Date(item.date),
+                        archivedAt: new Date(item.archivedAt)
+                    }));
+                    STATE.rewardHistory.weekly = STATE.rewardHistory.weekly.map(item => ({
+                        ...item,
+                        date: new Date(item.date),
+                        archivedAt: new Date(item.archivedAt)
+                    }));
+                    STATE.rewardHistory.monthly = STATE.rewardHistory.monthly.map(item => ({
+                        ...item,
+                        date: new Date(item.date),
+                        archivedAt: new Date(item.archivedAt)
+                    }));
+                }
+                
+                // Update earned status for all rewards
+                Object.keys(STATE.rewards).forEach(type => {
+                    STATE.rewards[type].forEach(reward => {
+                        if (type === 'daily') {
+                            reward.current = STATE.dailyCompletedSessions;
+                            reward.earned = reward.current >= reward.goal;
+                        } else if (type === 'weekly') {
+                            reward.current = STATE.weeklyCompletedSessions;
+                            reward.earned = reward.current >= reward.goal;
+                        } else if (type === 'monthly') {
+                            reward.current = STATE.monthlyCompletedSessions;
+                            reward.earned = reward.current >= reward.goal;
+                        }
+                    });
+                });
+                
+                this.renderRewards();
+                this.renderRewardHistory();
+            },
+            
+            renderRewards() {
+                DOM.dailyRewardsList.innerHTML = '';
+                DOM.weeklyRewardsList.innerHTML = '';
+                DOM.monthlyRewardsList.innerHTML = '';
+                
+                // Render daily rewards
+                STATE.rewards.daily.forEach(reward => {
+                    const rewardItem = document.createElement('div');
+                    rewardItem.className = `reward-item ${reward.earned ? 'reward-earned' : ''}`;
+                    
+                    const progressPercent = Math.min(100, (reward.current / reward.goal) * 100);
+                    
+                    rewardItem.innerHTML = `
+                        <div class="reward-icon">${reward.icon}</div>
+                        <div class="reward-details">
+                            <div class="reward-title">${reward.title}</div>
+                            <div class="reward-description">${reward.description}</div>
+                            ${!reward.earned ? `
+                                <div class="reward-progress">
+                                    <div class="progress-bar" style="width: ${progressPercent}%"></div>
+                                </div>
+                                <div class="reward-status">${reward.current}/${reward.goal} sessions</div>
+                            ` : ''}
+                        </div>
+                        ${reward.earned ? `<div class="reward-emoji">${reward.reward}</div>` : ''}
+                    `;
+                    
+                    DOM.dailyRewardsList.appendChild(rewardItem);
+                });
+                
+                // Render weekly rewards
+                STATE.rewards.weekly.forEach(reward => {
+                    const rewardItem = document.createElement('div');
+                    rewardItem.className = `reward-item ${reward.earned ? 'reward-earned' : ''}`;
+                    
+                    const progressPercent = Math.min(100, (reward.current / reward.goal) * 100);
+                    
+                    rewardItem.innerHTML = `
+                        <div class="reward-icon">${reward.icon}</div>
+                        <div class="reward-details">
+                            <div class="reward-title">${reward.title}</div>
+                            <div class="reward-description">${reward.description}</div>
+                            ${!reward.earned ? `
+                                <div class="reward-progress">
+                                    <div class="progress-bar" style="width: ${progressPercent}%"></div>
+                                </div>
+                                <div class="reward-status">${reward.current}/${reward.goal} sessions</div>
+                            ` : ''}
+                        </div>
+                        ${reward.earned ? `<div class="reward-emoji">${reward.reward}</div>` : ''}
+                    `;
+                    
+                    DOM.weeklyRewardsList.appendChild(rewardItem);
+                });
+                
+                // Render monthly rewards
+                STATE.rewards.monthly.forEach(reward => {
+                    const rewardItem = document.createElement('div');
+                    rewardItem.className = `reward-item ${reward.earned ? 'reward-earned' : ''}`;
+                    
+                    const progressPercent = Math.min(100, (reward.current / reward.goal) * 100);
+                    
+                    rewardItem.innerHTML = `
+                        <div class="reward-icon">${reward.icon}</div>
+                        <div class="reward-details">
+                            <div class="reward-title">${reward.title}</div>
+                            <div class="reward-description">${reward.description}</div>
+                            ${!reward.earned ? `
+                                <div class="reward-progress">
+                                    <div class="progress-bar" style="width: ${progressPercent}%"></div>
+                                </div>
+                                <div class="reward-status">${reward.current}/${reward.goal} sessions</div>
+                            ` : ''}
+                        </div>
+                        ${reward.earned ? `<div class="reward-emoji">${reward.reward}</div>` : ''}
+                    `;
+                    
+                    DOM.monthlyRewardsList.appendChild(rewardItem);
+                });
+            },
+            
+            renderRewardHistory() {
+                DOM.historyRewardsList.innerHTML = '';
+                
+                // Render daily history
+                if (STATE.rewardHistory.daily.length > 0) {
+                    const dailyHeader = document.createElement('h4');
+                    dailyHeader.textContent = 'Daily Progress History';
+                    DOM.historyRewardsList.appendChild(dailyHeader);
+                    
+                    STATE.rewardHistory.daily.forEach(item => {
+                        const historyItem = document.createElement('div');
+                        historyItem.className = 'history-item';
+                        historyItem.innerHTML = `
+                            <div><strong>${item.periodName}</strong></div>
+                            <div>Completed: ${item.completedSessions} sessions</div>
+                            <div style="font-size: 0.8em; color: #666;">${item.archivedAt.toLocaleDateString()}</div>
+                        `;
+                        DOM.historyRewardsList.appendChild(historyItem);
+                    });
+                }
+                
+                // Render weekly history
+                if (STATE.rewardHistory.weekly.length > 0) {
+                    const weeklyHeader = document.createElement('h4');
+                    weeklyHeader.textContent = 'Weekly Progress History';
+                    weeklyHeader.style.marginTop = '20px';
+                    DOM.historyRewardsList.appendChild(weeklyHeader);
+                    
+                    STATE.rewardHistory.weekly.forEach(item => {
+                        const historyItem = document.createElement('div');
+                        historyItem.className = 'history-item';
+                        historyItem.innerHTML = `
+                            <div><strong>${item.periodName}</strong></div>
+                            <div>Completed: ${item.completedSessions} sessions</div>
+                            <div style="font-size: 0.8em; color: #666;">${item.archivedAt.toLocaleDateString()}</div>
+                        `;
+                        DOM.historyRewardsList.appendChild(historyItem);
+                    });
+                }
+                
+                // Render monthly history
+                if (STATE.rewardHistory.monthly.length > 0) {
+                    const monthlyHeader = document.createElement('h4');
+                    monthlyHeader.textContent = 'Monthly Progress History';
+                    monthlyHeader.style.marginTop = '20px';
+                    DOM.historyRewardsList.appendChild(monthlyHeader);
+                    
+                    STATE.rewardHistory.monthly.forEach(item => {
+                        const historyItem = document.createElement('div');
+                        historyItem.className = 'history-item';
+                        historyItem.innerHTML = `
+                            <div><strong>${item.periodName}</strong></div>
+                            <div>Completed: ${item.completedSessions} sessions</div>
+                            <div style="font-size: 0.8em; color: #666;">${item.archivedAt.toLocaleDateString()}</div>
+                        `;
+                        DOM.historyRewardsList.appendChild(historyItem);
+                    });
+                }
+                
+                if (STATE.rewardHistory.daily.length === 0 && 
+                    STATE.rewardHistory.weekly.length === 0 && 
+                    STATE.rewardHistory.monthly.length === 0) {
+                    const emptyMessage = document.createElement('p');
+                    emptyMessage.textContent = 'No reward history yet';
+                    emptyMessage.style.textAlign = 'center';
+                    emptyMessage.style.padding = '20px';
+                    emptyMessage.style.color = '#666';
+                    DOM.historyRewardsList.appendChild(emptyMessage);
+                }
+            },
+            
+            resetRewards() {
+                if (confirm('Are you sure you want to reset all rewards progress? This will not delete your history.')) {
+                    STATE.rewards.daily.forEach(reward => {
+                        reward.current = 0;
+                        reward.earned = false;
+                    });
+                    STATE.rewards.weekly.forEach(reward => {
+                        reward.current = 0;
+                        reward.earned = false;
+                    });
+                    STATE.rewards.monthly.forEach(reward => {
+                        reward.current = 0;
+                        reward.earned = false;
+                    });
+                    
+                    STATE.dailyCompletedSessions = 0;
+                    STATE.weeklyCompletedSessions = 0;
+                    STATE.monthlyCompletedSessions = 0;
+                    
+                    this.saveRewards();
+                    this.renderRewards();
+                }
+            }
+        };
+
+        // ========== Notes Functions ==========
+        const noteActions = {
+            saveNote(isWorkNote) {
+                const noteText = DOM.noteInput.value.trim();
+                
+                if (noteText) {
+                    const now = new Date();
+                    const timeString = now.toLocaleTimeString();
+                    const dateString = now.toLocaleDateString();
+                    
+                    const noteItem = document.createElement('div');
+                    noteItem.className = `note-item ${isWorkNote ? 'work-note' : 'break-note'}`;
+                    
+                    noteItem.innerHTML = `
+                        <div class="note-time" contenteditable="true" data-type="time">${dateString} ${timeString}</div>
+                        <div class="note-text" contenteditable="true" data-type="text">${noteText}</div>
+                        <div class="note-actions">
+                            <button class="note-action-btn" onclick="noteActions.deleteNote(this)">Delete</button>
+                        </div>
+                    `;
+                    
+                    DOM.noteList.insertBefore(noteItem, DOM.noteList.firstChild);
+                    DOM.noteInput.value = '';
+                    
+                    // Save to state
+                    STATE.notes.unshift({
+                        type: isWorkNote ? 'work' : 'break',
+                        text: noteText,
+                        time: `${dateString} ${timeString}`,
+                        timestamp: now.getTime()
+                    });
+                    
+                    // Also add to session history if not during a timer
+                    if (!STATE.isRunning) {
+                        historyActions.addSession({
+                            type: isWorkNote ? 'work' : 'break',
+                            duration: 0,
+                            notes: noteText,
+                            timestamp: now
+                        });
+                    }
+                    
+                    noteActions.saveToStorage();
+                }
+            },
+
+            deleteNote(button) {
+                const noteItem = button.closest('.note-item');
+                const index = Array.from(DOM.noteList.children).indexOf(noteItem);
+                
+                if (index !== -1) {
+                    STATE.notes.splice(index, 1);
+                    noteItem.remove();
+                    noteActions.saveToStorage();
+                }
+            },
+
+            deleteAllNotes() {
+                if (confirm('Are you sure you want to delete all notes? This cannot be undone.')) {
+                    STATE.notes = [];
+                    DOM.noteList.innerHTML = '';
+                    noteActions.saveToStorage();
+                }
+            },
+
+            saveToStorage() {
+                localStorage.setItem('notes', JSON.stringify(STATE.notes));
+            },
+
+            loadFromStorage() {
+                const savedNotes = localStorage.getItem('notes');
+                if (savedNotes) {
+                    STATE.notes = JSON.parse(savedNotes);
+                    
+                    // Sort notes by timestamp (newest first)
+                    STATE.notes.sort((a, b) => b.timestamp - a.timestamp);
+                    
+                    // Render notes
+                    STATE.notes.forEach(note => {
+                        const noteItem = document.createElement('div');
+                        noteItem.className = `note-item ${note.type === 'work' ? 'work-note' : 'break-note'}`;
+                        
+                        noteItem.innerHTML = `
+                            <div class="note-time" contenteditable="true" data-type="time">${note.time}</div>
+                            <div class="note-text" contenteditable="true" data-type="text">${note.text}</div>
+                            <div class="note-actions">
+                                <button class="note-action-btn" onclick="noteActions.deleteNote(this)">Delete</button>
+                            </div>
+                        `;
+                        
+                        DOM.noteList.appendChild(noteItem);
+                    });
+                }
+                
+                // Add event listeners for editable fields
+                document.querySelectorAll('.note-time, .note-text').forEach(element => {
+                    element.addEventListener('blur', function() {
+                        const noteItem = this.closest('.note-item');
+                        const index = Array.from(DOM.noteList.children).indexOf(noteItem);
+                        
+                        if (index !== -1 && STATE.notes[index]) {
+                            const type = this.getAttribute('data-type');
+                            if (type === 'time') {
+                                STATE.notes[index].time = this.textContent;
+                            } else if (type === 'text') {
+                                STATE.notes[index].text = this.textContent;
+                            }
+                            noteActions.saveToStorage();
+                        }
+                    });
+                });
+                
+                STATE.totalWorkSeconds = parseInt(localStorage.getItem('totalWorkSeconds')) || 0;
+                STATE.totalBreakSeconds = parseInt(localStorage.getItem('totalBreakSeconds')) || 0;
+                trackingActions.updateDisplay();
+            },
+
+            copyToClipboard() {
+                let notesText = '';
+                
+                DOM.noteList.querySelectorAll('.note-item').forEach(item => {
+                    const time = item.querySelector('.note-time').textContent;
+                    const text = item.querySelector('.note-text').textContent;
+                    const type = item.classList.contains('work-note') ? 'WORK' : 'BREAK';
+                    notesText += `${type} - ${time}\n${text}\n\n`;
+                });
+                
+                navigator.clipboard.writeText(notesText.trim()).then(() => {
+                    alert('All notes copied to clipboard!');
+                }).catch(err => {
+                    console.error('Failed to copy notes: ', err);
+                });
+            }
+        };
+
+        // ========== History Functions ==========
+        const historyActions = {
+            addSession(session) {
+                STATE.sessionHistory.push(session);
+                this.saveHistory();
+                this.renderHistory();
+            },
+
+            saveHistory() {
+                localStorage.setItem('sessionHistory', JSON.stringify(STATE.sessionHistory));
+            },
+
+            loadHistory() {
+                const savedHistory = localStorage.getItem('sessionHistory');
+                if (savedHistory) {
+                    STATE.sessionHistory = JSON.parse(savedHistory);
+                    this.renderHistory();
+                }
+            },
+
+            clearHistory() {
+                if (confirm('Are you sure you want to clear all session history? This cannot be undone.')) {
+                    STATE.sessionHistory = [];
+                    this.saveHistory();
+                    DOM.historyList.innerHTML = '';
+                    // Force immediate UI update
+                    setTimeout(() => {
+                        historyActions.renderHistory();
+                    }, 0);
+                }
+            },
+
+            exportHistory() {
+                let historyText = 'Pomodoro Session History\n\n';
+                
+                STATE.sessionHistory.forEach(session => {
+                    const date = new Date(session.timestamp);
+                    const dateString = date.toLocaleDateString();
+                    const timeString = date.toLocaleTimeString();
+                    const durationString = trackingActions.formatTime(session.duration);
+                    
+                    historyText += `Type: ${session.type.toUpperCase()}\n`;
+                    historyText += `Date: ${dateString} ${timeString}\n`;
+                    historyText += `Duration: ${durationString}\n`;
+                    historyText += `Notes: ${session.notes || 'Enter work/project here'}\n\n`;
+                });
+                
+                // Create a blob and download it
+                const blob = new Blob([historyText], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'pomodoro-session-history.txt';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            },
+
+            renderHistory() {
+                DOM.historyList.innerHTML = '';
+                
+                if (STATE.sessionHistory.length === 0) {
+                    DOM.historyList.innerHTML = '<p style="text-align: center; padding: 20px; color: #666;">No session history yet</p>';
+                    return;
+                }
+                
+                // Sort by timestamp (newest first)
+                STATE.sessionHistory.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                
+                STATE.sessionHistory.forEach((session, index) => {
+                    const historyItem = document.createElement('div');
+                    historyItem.className = 'history-item';
+                    
+                    const date = new Date(session.timestamp);
+                    const dateString = date.toLocaleDateString();
+                    const timeString = date.toLocaleTimeString();
+                    const durationString = trackingActions.formatTime(session.duration);
+                    
+                    historyItem.innerHTML = `
+                        <div class="history-header">
+                            <span class="history-type ${session.type}-history">${session.type.charAt(0).toUpperCase() + session.type.slice(1)}</span>
+                            <span class="history-time" contenteditable="true" data-type="time" data-index="${index}">${dateString} ${timeString}</span>
+                        </div>
+                        <div class="history-duration editable" contenteditable="true" data-type="duration" data-index="${index}">Duration: ${durationString}</div>
+                        <div class="history-notes editable" contenteditable="true" data-type="notes" data-index="${index}">${session.notes || 'Enter work/project here'}</div>
+                        <div class="history-actions">
+                            <button class="history-action-btn" onclick="historyActions.deleteSession(${index})">Delete</button>
+                        </div>
+                    `;
+                    
+                    DOM.historyList.appendChild(historyItem);
+                });
+                
+                // Add event listeners for editable fields
+                document.querySelectorAll('.history-time, .history-duration, .history-notes').forEach(element => {
+                    element.addEventListener('blur', function() {
+                        const index = parseInt(this.getAttribute('data-index'));
+                        const type = this.getAttribute('data-type');
+                        
+                        if (type === 'time') {
+                            // Parse the edited time string and update the timestamp
+                            const timeString = this.textContent;
+                            const [datePart, timePart] = timeString.split(' ');
+                            const [month, day, year] = datePart.split('/');
+                            const [hours, minutes, seconds] = timePart.split(':');
+                            
+                            const newDate = new Date(year, month - 1, day, hours, minutes, seconds);
+                            STATE.sessionHistory[index].timestamp = newDate;
+                        } else if (type === 'duration') {
+                            // Parse duration from text like "Duration: 00:05:00"
+                            const durationText = this.textContent.replace('Duration: ', '');
+                            const [hours, minutes, seconds] = durationText.split(':').map(Number);
+                            STATE.sessionHistory[index].duration = hours * 3600 + minutes * 60 + seconds;
+                        } else if (type === 'notes') {
+                            STATE.sessionHistory[index].notes = this.textContent;
+                        }
+                        
+                        historyActions.saveHistory();
+                    });
+                });
+            },
+
+            deleteSession(index) {
+                STATE.sessionHistory.splice(index, 1);
+                this.saveHistory();
+                this.renderHistory();
+            }
+        };
+
+        // ========== Calendar Functions ==========
+        const calendarActions = {
+            renderCalendar() {
+                const month = STATE.calendar.currentMonth;
+                const year = STATE.calendar.currentYear;
+                
+                // Set calendar title
+                const monthNames = ["January", "February", "March", "April", "May", "June",
+                    "July", "August", "September", "October", "November", "December"];
+                DOM.calendarTitle.textContent = `${monthNames[month]} ${year}`;
+                
+                // Clear previous calendar days
+                while (DOM.calendarGrid.children.length > 7) {
+                    DOM.calendarGrid.removeChild(DOM.calendarGrid.lastChild);
+                }
+                
+                // Get first day of month and total days in month
+                const firstDay = new Date(year, month, 1).getDay();
+                const daysInMonth = new Date(year, month + 1, 0).getDate();
+                
+                // Add empty cells for days before the first day of the month
+                for (let i = 0; i < firstDay; i++) {
+                    const emptyCell = document.createElement('div');
+                    emptyCell.className = 'calendar-day empty';
+                    DOM.calendarGrid.appendChild(emptyCell);
+                }
+                
+                // Add cells for each day of the month
+                const today = new Date();
+                const currentDate = today.getDate();
+                const currentMonth = today.getMonth();
+                const currentYear = today.getFullYear();
+                
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const dayCell = document.createElement('div');
+                    dayCell.className = 'calendar-day';
+                    dayCell.textContent = day;
+                    
+                    // Check if this day has any sessions
+                    const hasSessions = STATE.sessionHistory.some(session => {
+                        const sessionDate = new Date(session.timestamp);
+                        return sessionDate.getDate() === day && 
+                               sessionDate.getMonth() === month && 
+                               sessionDate.getFullYear() === year;
+                    });
+                    
+                    if (hasSessions) {
+                        dayCell.classList.add('has-sessions');
+                    }
+                    
+                    // Highlight today
+                    if (day === currentDate && month === currentMonth && year === currentYear) {
+                        dayCell.classList.add('today');
+                    }
+                    
+                    // Highlight selected date
+                    if (STATE.calendar.selectedDate && 
+                        day === STATE.calendar.selectedDate.getDate() && 
+                        month === STATE.calendar.selectedDate.getMonth() && 
+                        year === STATE.calendar.selectedDate.getFullYear()) {
+                        dayCell.classList.add('selected');
+                    }
+                    
+                    dayCell.addEventListener('click', () => {
+                        const selectedDate = new Date(year, month, day);
+                        STATE.calendar.selectedDate = selectedDate;
+                        calendarActions.renderCalendar();
+                        calendarActions.showSessionsForDate(selectedDate);
+                    });
+                    
+                    DOM.calendarGrid.appendChild(dayCell);
+                }
+            },
+            
+            showSessionsForDate(date) {
+                DOM.calendarSessions.innerHTML = '';
+                
+                const sessionsForDate = STATE.sessionHistory.filter(session => {
+                    const sessionDate = new Date(session.timestamp);
+                    return sessionDate.getDate() === date.getDate() && 
+                           sessionDate.getMonth() === date.getMonth() && 
+                           sessionDate.getFullYear() === date.getFullYear();
+                });
+                
+                if (sessionsForDate.length === 0) {
+                    DOM.calendarSessions.innerHTML = '<p style="text-align: center; padding: 20px; color: #666;">No sessions for this date</p>';
+                    return;
+                }
+                
+                sessionsForDate.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+                
+                sessionsForDate.forEach((session, index) => {
+                    const sessionItem = document.createElement('div');
+                    sessionItem.className = `calendar-session-item ${session.type}`;
+                    
+                    const sessionDate = new Date(session.timestamp);
+                    const timeString = sessionDate.toLocaleTimeString();
+                    const durationString = trackingActions.formatTime(session.duration);
+                    
+                    sessionItem.innerHTML = `
+                        <div class="calendar-session-time">${timeString}</div>
+                        <div class="calendar-session-duration">${durationString}</div>
+                        <div class="calendar-session-notes" contenteditable="true" data-index="${index}">${session.notes || 'Enter work/project here'}</div>
+                    `;
+                    
+                    // Add event listener for editable notes
+                    sessionItem.querySelector('.calendar-session-notes').addEventListener('blur', function() {
+                        const sessionIndex = STATE.sessionHistory.findIndex(s => {
+                            const sDate = new Date(s.timestamp);
+                            return sDate.getDate() === date.getDate() && 
+                                   sDate.getMonth() === date.getMonth() && 
+                                   sDate.getFullYear() === date.getFullYear() &&
+                                   sDate.toLocaleTimeString() === timeString;
+                        });
+                        
+                        if (sessionIndex !== -1) {
+                            STATE.sessionHistory[sessionIndex].notes = this.textContent;
+                            historyActions.saveHistory();
+                        }
+                    });
+                    
+                    DOM.calendarSessions.appendChild(sessionItem);
+                });
+            },
+            
+            changeMonth(offset) {
+                STATE.calendar.currentMonth += offset;
+                
+                // Handle year wrap-around
+                if (STATE.calendar.currentMonth < 0) {
+                    STATE.calendar.currentMonth = 11;
+                    STATE.calendar.currentYear--;
+                } else if (STATE.calendar.currentMonth > 11) {
+                    STATE.calendar.currentMonth = 0;
+                    STATE.calendar.currentYear++;
+                }
+                
+                STATE.calendar.selectedDate = null;
+                calendarActions.renderCalendar();
+                DOM.calendarSessions.innerHTML = '<p style="text-align: center; padding: 20px; color: #666;">Select a date to view sessions</p>';
+            },
+            
+            exportCalendarData() {
+                // Group sessions by date
+                const sessionsByDate = {};
+                
+                STATE.sessionHistory.forEach(session => {
+                    const date = new Date(session.timestamp);
+                    const dateKey = date.toISOString().split('T')[0]; // YYYY-MM-DD format
+                    
+                    if (!sessionsByDate[dateKey]) {
+                        sessionsByDate[dateKey] = [];
+                    }
+                    
+                    sessionsByDate[dateKey].push(session);
+                });
+                
+                // Create CSV content
+                let csvContent = "Date,Type,Duration (seconds),Notes\n";
+                
+                Object.keys(sessionsByDate).sort().forEach(date => {
+                    sessionsByDate[date].forEach(session => {
+                        const notes = session.notes ? `"${session.notes.replace(/"/g, '""')}"` : '';
+                        csvContent += `${date},${session.type},${session.duration},${notes}\n`;
+                    });
+                });
+                
+                // Create download link
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.setAttribute('href', url);
+                link.setAttribute('download', `pomodoro-sessions-${new Date().toISOString().split('T')[0]}.csv`);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            },
+            
+            toggleCalendar() {
+                STATE.calendarOpen = !STATE.calendarOpen;
+                if (STATE.calendarOpen) {
+                    DOM.calendarPanel.classList.add('show');
+                    this.renderCalendar();
+                } else {
+                    DOM.calendarPanel.classList.remove('show');
+                }
+            }
+        };
+
+        // ========== Sound Control Functions ==========
+        const soundActions = {
+            togglePanel(panel) {
+                const panels = [DOM.infoPanel, DOM.noisePanel, DOM.lofiPanel, DOM.historyPanel, DOM.rewardsPanel, DOM.productivityPanel, DOM.calendarPanel];
+                panels.forEach(p => {
+                    if (p === panel) {
+                        p.classList.toggle('show');
+                        if (p === DOM.calendarPanel) {
+                            STATE.calendarOpen = p.classList.contains('show');
+                            if (STATE.calendarOpen) {
+                                calendarActions.renderCalendar();
+                            }
+                        }
+                    } else {
+                        p.classList.remove('show');
+                    }
+                });
+            },
+            
+            toggleNoisePlayback() {
+                if (STATE.currentNoiseType === 'none') return;
+                
+                if (STATE.isNoisePlaying) {
+                    STATE.currentNoise.pause();
+                    DOM.noisePlayBtn.textContent = '▶️';
+                    STATE.isNoisePlaying = false;
+                } else {
+                    STATE.currentNoise.play();
+                    DOM.noisePlayBtn.textContent = '⏸️';
+                    STATE.isNoisePlaying = true;
+                }
+            },
+            
+            changeBackgroundNoise(e) {
+                if (STATE.currentNoise) {
+                    STATE.currentNoise.pause();
+                    STATE.currentNoise.currentTime = 0;
+                }
+                
+                const selectedNoise = e.target.value;
+                STATE.currentNoiseType = selectedNoise;
+                
+                if (selectedNoise !== 'none') {
+                    STATE.currentNoise = document.getElementById(`${selectedNoise}Sound`);
+                    STATE.currentNoise.volume = STATE.currentVolume;
+                    STATE.currentNoise.play();
+                    STATE.isNoisePlaying = true;
+                    DOM.noisePlayBtn.textContent = '⏸️';
+                    DOM.nowPlaying.textContent = `Now playing: ${STATE.noiseNames[selectedNoise]}`;
+                } else {
+                    STATE.currentNoise = null;
+                    STATE.isNoisePlaying = false;
+                    DOM.noisePlayBtn.textContent = '▶️';
+                    DOM.nowPlaying.textContent = STATE.noiseNames['none'];
+                }
+                
+                document.querySelectorAll('.noise-option').forEach(option => {
+                    option.classList.remove('active');
+                });
+                e.target.closest('.noise-option').classList.add('active');
+            },
+            
+            updateVolume() {
+                STATE.currentVolume = parseFloat(DOM.volumeControl.value);
+                if (STATE.currentNoise) {
+                    STATE.currentNoise.volume = STATE.currentVolume;
+                }
+            }
+        };
+
+        // ========== Reward Tab Functions ==========
+        const rewardTabActions = {
+            setupTabs() {
+                document.querySelectorAll('.reward-tab').forEach(tab => {
+                    tab.addEventListener('click', () => {
+                        // Set active tab
+                        document.querySelectorAll('.reward-tab').forEach(t => {
+                            t.classList.remove('active');
+                        });
+                        tab.classList.add('active');
+                        
+                        // Show corresponding content
+                        const tabType = tab.getAttribute('data-tab');
+                        document.querySelectorAll('.reward-tab-content').forEach(content => {
+                            content.classList.remove('active');
+                        });
+                        document.getElementById(`${tabType}Rewards`).classList.add('active');
+                    });
+                });
+            }
+        };
+
+        // ========== Dropdown Menu Functions ==========
+        const dropdownActions = {
+            toggleDropdown() {
+                DOM.dropdownContent.classList.toggle('show');
+            },
+            
+            closeDropdown() {
+                DOM.dropdownContent.classList.remove('show');
+            },
+            
+            setupMenuItems() {
+                DOM.infoMenuItem.addEventListener('click', () => {
+                    soundActions.togglePanel(DOM.infoPanel);
+                    this.closeDropdown();
+                });
+                
+                DOM.productivityMenuItem.addEventListener('click', () => {
+                    soundActions.togglePanel(DOM.productivityPanel);
+                    this.closeDropdown();
+                });
+                
+                DOM.noiseMenuItem.addEventListener('click', () => {
+                    soundActions.togglePanel(DOM.noisePanel);
+                    this.closeDropdown();
+                });
+                
+                DOM.lofiMenuItem.addEventListener('click', () => {
+                    soundActions.togglePanel(DOM.lofiPanel);
+                    this.closeDropdown();
+                });
+                
+                DOM.historyMenuItem.addEventListener('click', () => {
+                    soundActions.togglePanel(DOM.historyPanel);
+                    this.closeDropdown();
+                });
+                
+                DOM.rewardsMenuItem.addEventListener('click', () => {
+                    soundActions.togglePanel(DOM.rewardsPanel);
+                    this.closeDropdown();
+                });
+                
+                DOM.calendarMenuItem.addEventListener('click', () => {
+                    soundActions.togglePanel(DOM.calendarPanel);
+                    this.closeDropdown();
+                });
+                
+                DOM.donateMenuItem.addEventListener('click', () => {
+                    window.open('https://www.paypal.com/donate?business=YOUR_PAYPAL_EMAIL&item_name=Support+Pomodoro+Timer+Creator', '_blank');
+                    this.closeDropdown();
+                });
+            }
+        };
+
+        // ========== Event Listeners ==========
+        function setupEventListeners() {
+            DOM.startButton.addEventListener('click', timerActions.start);
+            DOM.stopButton.addEventListener('click', timerActions.stop);
+            DOM.resetButton.addEventListener('click', timerActions.reset);
+            DOM.work25Button.addEventListener('click', () => timerActions.setQuickTime(25, 0, true));
+            DOM.break5Button.addEventListener('click', () => timerActions.setQuickTime(5, 0, false));
+            DOM.break30Button.addEventListener('click', () => timerActions.setQuickTime(30, 0, false));
+            DOM.setWorkModeButton.addEventListener('click', () => timerActions.setMode(true));
+            DOM.setBreakModeButton.addEventListener('click', () => timerActions.setMode(false));
+            
+            DOM.saveWorkNoteButton.addEventListener('click', () => noteActions.saveNote(true));
+            DOM.saveBreakNoteButton.addEventListener('click', () => noteActions.saveNote(false));
+            DOM.copyNotesButton.addEventListener('click', noteActions.copyToClipboard);
+            DOM.deleteAllNotes.addEventListener('click', noteActions.deleteAllNotes);
+            DOM.resetTracking.addEventListener('click', trackingActions.resetTracking);
+            
+            DOM.noisePlayBtn.addEventListener('click', soundActions.toggleNoisePlayback);
+            DOM.volumeControl.addEventListener('input', soundActions.updateVolume);
+            DOM.noiseOptions.forEach(option => {
+                option.addEventListener('change', soundActions.changeBackgroundNoise);
+            });
+
+            DOM.clearHistory.addEventListener('click', historyActions.clearHistory);
+            DOM.exportHistory.addEventListener('click', historyActions.exportHistory);
+
+            DOM.closeProductivityPanel.addEventListener('click', () => {
+                DOM.productivityPanel.classList.remove('show');
+            });
+            
+            DOM.closeInfoPanel.addEventListener('click', () => {
+                DOM.infoPanel.classList.remove('show');
+            });
+            
+            DOM.closeNoisePanel.addEventListener('click', () => {
+                DOM.noisePanel.classList.remove('show');
+            });
+            
+            DOM.closeLofiPanel.addEventListener('click', () => {
+                DOM.lofiPanel.classList.remove('show');
+            });
+            
+            DOM.closeHistoryPanel.addEventListener('click', () => {
+                DOM.historyPanel.classList.remove('show');
+            });
+            
+            DOM.closeRewardsPanel.addEventListener('click', () => {
+                DOM.rewardsPanel.classList.remove('show');
+            });
+            
+            DOM.closeCalendarPanel.addEventListener('click', () => {
+                DOM.calendarPanel.classList.remove('show');
+                STATE.calendarOpen = false;
+            });
+
+            DOM.resetRewards.addEventListener('click', rewardActions.resetRewards);
+
+            // Calendar navigation
+            DOM.prevMonthBtn.addEventListener('click', () => calendarActions.changeMonth(-1));
+            DOM.nextMonthBtn.addEventListener('click', () => calendarActions.changeMonth(1));
+            DOM.exportCalendarBtn.addEventListener('click', calendarActions.exportCalendarData);
+
+            // Dropdown menu events
+            DOM.dropdownBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                dropdownActions.toggleDropdown();
+            });
+            
+            dropdownActions.setupMenuItems();
+
+            document.addEventListener('click', (e) => {
+                const panels = [DOM.infoPanel, DOM.noisePanel, DOM.lofiPanel, DOM.historyPanel, 
+                               DOM.rewardsPanel, DOM.productivityPanel, DOM.calendarPanel];
+                
+                if (!panels.some(panel => panel.contains(e.target)) && 
+                    !DOM.dropdownBtn.contains(e.target) && 
+                    !DOM.dropdownContent.contains(e.target)) {
+                    panels.forEach(panel => panel.classList.remove('show'));
+                    dropdownActions.closeDropdown();
+                }
+            });
+            
+            window.addEventListener('beforeunload', () => {
+                localStorage.setItem('totalWorkSeconds', STATE.totalWorkSeconds.toString());
+                localStorage.setItem('totalBreakSeconds', STATE.totalBreakSeconds.toString());
+                noteActions.saveToStorage();
+                historyActions.saveHistory();
+                rewardActions.saveRewards();
+            });
+
+            rewardTabActions.setupTabs();
+            
+            // Timer display edit handling
+            DOM.timer.addEventListener('blur', function() {
+                const timeParts = this.textContent.split(':');
+                let minutes = parseInt(timeParts[0]) || 0;
+                let seconds = parseInt(timeParts[1]) || 0;
+                
+                // Validate input
+                if (isNaN(minutes)) minutes = 0;
+                if (isNaN(seconds)) seconds = 0;
+                
+                // Ensure seconds are between 0-59
+                seconds = Math.min(59, Math.max(0, seconds));
+                
+                // Update display with validated values
+                this.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                // Update state
+                STATE.totalSeconds = minutes * 60 + seconds;
+                STATE.initialSeconds = STATE.totalSeconds;
+                
+                // Reset progress circle
+                DOM.timerProgress.style.background = `conic-gradient(var(--primary-blue) 0%, transparent 0%)`;
+            });
+        }
+
+        // ========== Initialization ==========
+        function init() {
+            setupEventListeners();
+            noteActions.loadFromStorage();
+            historyActions.loadHistory();
+            rewardActions.loadRewards();
+            timerActions.updateModeIndicator();
+            soundActions.updateVolume();
+            DOM.nowPlaying.textContent = STATE.noiseNames['none'];
+            
+            // Set initial progress circle
+            DOM.timerProgress.style.background = `conic-gradient(var(--primary-blue) 0%, transparent 0%)`;
+            
+            // Initialize rewards
+            rewardTabActions.setupTabs();
+            
+            // Set up scrollable rewards panel
+            const rewardsContents = document.querySelectorAll('.reward-tab-content');
+            rewardsContents.forEach(content => {
+                content.style.maxHeight = '400px';
+                content.style.overflowY = 'auto';
+            });
+        }
+
+        init();
+    </script>
+</body>
+</html>
