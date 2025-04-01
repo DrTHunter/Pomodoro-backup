@@ -839,157 +839,9 @@
             pointer-events: none;
         }
 
-        /* Calendar Page Styles */
-        .calendar-page {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: white;
-            z-index: 1000;
-            overflow-y: auto;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-
-        .calendar-page.show {
-            display: block;
-        }
-
-        .calendar-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .calendar-title {
-            font-size: 1.5em;
-            font-weight: bold;
-            color: var(--accent-purple);
-        }
-
-        .calendar-nav {
-            display: flex;
-            gap: 10px;
-        }
-
-        .calendar-nav button {
-            background: none;
-            border: none;
-            font-size: 1.2em;
-            cursor: pointer;
-            color: var(--accent-purple);
-        }
-
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 5px;
-        }
-
-        .calendar-day-header {
-            text-align: center;
-            font-weight: bold;
-            padding: 10px;
-            color: var(--accent-purple);
-            background-color: #f5f5f5;
-            border-radius: 5px;
-        }
-
-        .calendar-day {
-            text-align: center;
-            padding: 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            border: 1px solid #eee;
-            transition: all 0.2s;
-        }
-
-        .calendar-day:hover {
-            background-color: #f0f0f0;
-        }
-
-        .calendar-day.empty {
-            visibility: hidden;
-        }
-
-        .calendar-day.today {
-            background-color: var(--accent-purple);
-            color: white;
-            font-weight: bold;
-        }
-
-        .calendar-day.has-sessions {
-            background-color: #e1bee7;
-            font-weight: bold;
-        }
-
-        .calendar-day.selected {
-            background-color: var(--primary-blue);
-            color: white;
-        }
-
-        .calendar-sessions {
-            margin-top: 30px;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        .calendar-session-item {
-            padding: 12px;
-            margin-bottom: 8px;
-            border-radius: 5px;
-            background-color: #f5f5f5;
-        }
-
-        .calendar-session-item.work {
-            border-left: 4px solid var(--primary-pink);
-        }
-
-        .calendar-session-item.break {
-            border-left: 4px solid var(--primary-green);
-        }
-
-        .calendar-session-time {
-            font-size: 0.9em;
-            color: #666;
-        }
-
-        .calendar-session-duration {
-            font-weight: bold;
-        }
-
-        .calendar-session-notes {
-            margin-top: 5px;
-            font-size: 0.9em;
-        }
-
-        .calendar-export-btn {
-            background-color: var(--primary-blue);
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 5px;
-            margin-top: 20px;
-            cursor: pointer;
-            font-size: 1em;
-        }
-
-        .back-to-timer-btn {
-            background-color: var(--primary-purple);
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 5px;
-            margin-top: 20px;
-            cursor: pointer;
-            font-size: 1em;
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
+        /* Negative timer styling */
+        .negative-timer {
+            color: #f44336 !important;
         }
 
         /* Mobile responsiveness */
@@ -1059,17 +911,6 @@
                     height: auto;
                 }
             }
-
-            /* Calendar page adjustments for mobile */
-            .calendar-day {
-                padding: 8px;
-                font-size: 0.9em;
-            }
-            
-            .calendar-day-header {
-                padding: 8px;
-                font-size: 0.9em;
-            }
         }
 
         /* Desktop specific styles */
@@ -1080,19 +921,6 @@
                 left: auto;
                 transform: none;
             }
-            
-            .calendar-page {
-                padding: 40px;
-            }
-            
-            .calendar-grid {
-                gap: 10px;
-            }
-        }
-
-        /* Negative timer styling */
-        .negative-timer {
-            color: #f44336 !important;
         }
     </style>
 </head>
@@ -1123,9 +951,6 @@
             </div>
             <div class="dropdown-item" id="rewardsMenuItem">
                 <i>🏆</i> Rewards
-            </div>
-            <div class="dropdown-item" id="calendarMenuItem">
-                <i>📅</i> Calendar
             </div>
             <div class="dropdown-item" id="donateMenuItem">
                 <i>☕</i> Buy Creator a Coffee
@@ -1197,37 +1022,6 @@
 
     <div class="animal-side animal-right">
         <img class="animal-gif" id="rightAnimalGif" src="assets/working-dog-animation.gif" alt="Working animal">
-    </div>
-
-    <!-- Calendar Page -->
-    <div class="calendar-page" id="calendarPage">
-        <div class="calendar-header">
-            <div class="calendar-title" id="calendarTitle">March 2023</div>
-            <div class="calendar-nav">
-                <button id="prevMonthBtn">&lt;</button>
-                <button id="nextMonthBtn">&gt;</button>
-            </div>
-        </div>
-        
-        <div class="calendar-grid" id="calendarGrid">
-            <!-- Calendar headers -->
-            <div class="calendar-day-header">Sun</div>
-            <div class="calendar-day-header">Mon</div>
-            <div class="calendar-day-header">Tue</div>
-            <div class="calendar-day-header">Wed</div>
-            <div class="calendar-day-header">Thu</div>
-            <div class="calendar-day-header">Fri</div>
-            <div class="calendar-day-header">Sat</div>
-            
-            <!-- Calendar days will be inserted here by JavaScript -->
-        </div>
-        
-        <div class="calendar-sessions" id="calendarSessions">
-            <p style="text-align: center; padding: 20px; color: #666;">Select a date to view sessions</p>
-        </div>
-        
-        <button id="exportCalendarBtn" class="calendar-export-btn">Export Calendar Data</button>
-        <button id="backToTimerBtn" class="back-to-timer-btn">Back to Timer</button>
     </div>
 
     <!-- Productivity Info Panel -->
@@ -1461,21 +1255,12 @@
             lofiMenuItem: document.getElementById('lofiMenuItem'),
             historyMenuItem: document.getElementById('historyMenuItem'),
             rewardsMenuItem: document.getElementById('rewardsMenuItem'),
-            calendarMenuItem: document.getElementById('calendarMenuItem'),
             donateMenuItem: document.getElementById('donateMenuItem'),
             noisePlayBtn: document.getElementById('noisePlayBtn'),
             noisePanel: document.getElementById('noisePanel'),
             lofiPanel: document.getElementById('lofiPanel'),
             historyPanel: document.getElementById('historyPanel'),
-            rewardsPanel: document.getElementById('rewardsPanel'),
-            calendarPage: document.getElementById('calendarPage'),
-            calendarTitle: document.getElementById('calendarTitle'),
-            calendarGrid: document.getElementById('calendarGrid'),
-            calendarSessions: document.getElementById('calendarSessions'),
-            prevMonthBtn: document.getElementById('prevMonthBtn'),
-            nextMonthBtn: document.getElementById('nextMonthBtn'),
-            exportCalendarBtn: document.getElementById('exportCalendarBtn'),
-            backToTimerBtn: document.getElementById('backToTimerBtn')
+            rewardsPanel: document.getElementById('rewardsPanel')
         };
 
         // ========== State Management ==========
@@ -1672,11 +1457,6 @@
                 daily: [],
                 weekly: [],
                 monthly: []
-            },
-            calendar: {
-                currentMonth: new Date().getMonth(),
-                currentYear: new Date().getFullYear(),
-                selectedDate: null
             }
         };
 
@@ -2704,193 +2484,6 @@
             }
         };
 
-        // ========== Calendar Functions ==========
-        const calendarActions = {
-            renderCalendar() {
-                const month = STATE.calendar.currentMonth;
-                const year = STATE.calendar.currentYear;
-                
-                // Set calendar title
-                const monthNames = ["January", "February", "March", "April", "May", "June",
-                    "July", "August", "September", "October", "November", "December"];
-                DOM.calendarTitle.textContent = `${monthNames[month]} ${year}`;
-                
-                // Clear previous calendar days
-                while (DOM.calendarGrid.children.length > 7) {
-                    DOM.calendarGrid.removeChild(DOM.calendarGrid.lastChild);
-                }
-                
-                // Get first day of month and total days in month
-                const firstDay = new Date(year, month, 1).getDay();
-                const daysInMonth = new Date(year, month + 1, 0).getDate();
-                
-                // Add empty cells for days before the first day of the month
-                for (let i = 0; i < firstDay; i++) {
-                    const emptyCell = document.createElement('div');
-                    emptyCell.className = 'calendar-day empty';
-                    DOM.calendarGrid.appendChild(emptyCell);
-                }
-                
-                // Add cells for each day of the month
-                const today = new Date();
-                const currentDate = today.getDate();
-                const currentMonth = today.getMonth();
-                const currentYear = today.getFullYear();
-                
-                for (let day = 1; day <= daysInMonth; day++) {
-                    const dayCell = document.createElement('div');
-                    dayCell.className = 'calendar-day';
-                    dayCell.textContent = day;
-                    
-                    // Check if this day has any sessions
-                    const hasSessions = STATE.sessionHistory.some(session => {
-                        const sessionDate = new Date(session.timestamp);
-                        return sessionDate.getDate() === day && 
-                               sessionDate.getMonth() === month && 
-                               sessionDate.getFullYear() === year;
-                    });
-                    
-                    if (hasSessions) {
-                        dayCell.classList.add('has-sessions');
-                    }
-                    
-                    // Highlight today
-                    if (day === currentDate && month === currentMonth && year === currentYear) {
-                        dayCell.classList.add('today');
-                    }
-                    
-                    // Highlight selected date
-                    if (STATE.calendar.selectedDate && 
-                        day === STATE.calendar.selectedDate.getDate() && 
-                        month === STATE.calendar.selectedDate.getMonth() && 
-                        year === STATE.calendar.selectedDate.getFullYear()) {
-                        dayCell.classList.add('selected');
-                    }
-                    
-                    dayCell.addEventListener('click', () => {
-                        const selectedDate = new Date(year, month, day);
-                        STATE.calendar.selectedDate = selectedDate;
-                        calendarActions.renderCalendar();
-                        calendarActions.showSessionsForDate(selectedDate);
-                    });
-                    
-                    DOM.calendarGrid.appendChild(dayCell);
-                }
-            },
-            
-            showSessionsForDate(date) {
-                DOM.calendarSessions.innerHTML = '';
-                
-                const sessionsForDate = STATE.sessionHistory.filter(session => {
-                    const sessionDate = new Date(session.timestamp);
-                    return sessionDate.getDate() === date.getDate() && 
-                           sessionDate.getMonth() === date.getMonth() && 
-                           sessionDate.getFullYear() === date.getFullYear();
-                });
-                
-                if (sessionsForDate.length === 0) {
-                    DOM.calendarSessions.innerHTML = '<p style="text-align: center; padding: 20px; color: #666;">No sessions for this date</p>';
-                    return;
-                }
-                
-                sessionsForDate.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-                
-                sessionsForDate.forEach((session, index) => {
-                    const sessionItem = document.createElement('div');
-                    sessionItem.className = `calendar-session-item ${session.type}`;
-                    
-                    const sessionDate = new Date(session.timestamp);
-                    const timeString = sessionDate.toLocaleTimeString();
-                    const durationString = trackingActions.formatTime(session.duration);
-                    
-                    sessionItem.innerHTML = `
-                        <div class="calendar-session-time">${timeString}</div>
-                        <div class="calendar-session-duration">${durationString}</div>
-                        <div class="calendar-session-notes" contenteditable="true" data-index="${index}">${session.notes || 'Enter work/project here'}</div>
-                    `;
-                    
-                    // Add event listener for editable notes
-                    sessionItem.querySelector('.calendar-session-notes').addEventListener('blur', function() {
-                        const sessionIndex = STATE.sessionHistory.findIndex(s => {
-                            const sDate = new Date(s.timestamp);
-                            return sDate.getDate() === date.getDate() && 
-                                   sDate.getMonth() === date.getMonth() && 
-                                   sDate.getFullYear() === date.getFullYear() &&
-                                   sDate.toLocaleTimeString() === timeString;
-                        });
-                        
-                        if (sessionIndex !== -1) {
-                            STATE.sessionHistory[sessionIndex].notes = this.textContent;
-                            historyActions.saveHistory();
-                        }
-                    });
-                    
-                    DOM.calendarSessions.appendChild(sessionItem);
-                });
-            },
-            
-            changeMonth(offset) {
-                STATE.calendar.currentMonth += offset;
-                
-                // Handle year wrap-around
-                if (STATE.calendar.currentMonth < 0) {
-                    STATE.calendar.currentMonth = 11;
-                    STATE.calendar.currentYear--;
-                } else if (STATE.calendar.currentMonth > 11) {
-                    STATE.calendar.currentMonth = 0;
-                    STATE.calendar.currentYear++;
-                }
-                
-                STATE.calendar.selectedDate = null;
-                calendarActions.renderCalendar();
-                DOM.calendarSessions.innerHTML = '<p style="text-align: center; padding: 20px; color: #666;">Select a date to view sessions</p>';
-            },
-            
-            exportCalendarData() {
-                // Group sessions by date
-                const sessionsByDate = {};
-                
-                STATE.sessionHistory.forEach(session => {
-                    const date = new Date(session.timestamp);
-                    const dateKey = date.toISOString().split('T')[0]; // YYYY-MM-DD format
-                    
-                    if (!sessionsByDate[dateKey]) {
-                        sessionsByDate[dateKey] = [];
-                    }
-                    
-                    sessionsByDate[dateKey].push(session);
-                });
-                
-                // Create CSV content
-                let csvContent = "Date,Type,Duration (seconds),Notes\n";
-                
-                Object.keys(sessionsByDate).sort().forEach(date => {
-                    sessionsByDate[date].forEach(session => {
-                        const notes = session.notes ? `"${session.notes.replace(/"/g, '""')}"` : '';
-                        csvContent += `${date},${session.type},${session.duration},${notes}\n`;
-                    });
-                });
-                
-                // Create download link
-                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-                const url = URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.setAttribute('href', url);
-                link.setAttribute('download', `pomodoro-sessions-${new Date().toISOString().split('T')[0]}.csv`);
-                link.style.visibility = 'hidden';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            },
-            
-            toggleCalendar() {
-                DOM.calendarPage.classList.toggle('show');
-                if (DOM.calendarPage.classList.contains('show')) {
-                    this.renderCalendar();
-                }
-            }
-        };
-
         // ========== Sound Control Functions ==========
         const soundActions = {
             togglePanel(panel) {
@@ -3018,11 +2611,6 @@
                     this.closeDropdown();
                 });
                 
-                DOM.calendarMenuItem.addEventListener('click', () => {
-                    calendarActions.toggleCalendar();
-                    this.closeDropdown();
-                });
-                
                 DOM.donateMenuItem.addEventListener('click', () => {
                     window.open('https://www.paypal.com/donate?business=YOUR_PAYPAL_EMAIL&item_name=Support+Pomodoro+Timer+Creator', '_blank');
                     this.closeDropdown();
@@ -3081,14 +2669,6 @@
             });
 
             DOM.resetRewards.addEventListener('click', rewardActions.resetRewards);
-
-            // Calendar navigation
-            DOM.prevMonthBtn.addEventListener('click', () => calendarActions.changeMonth(-1));
-            DOM.nextMonthBtn.addEventListener('click', () => calendarActions.changeMonth(1));
-            DOM.exportCalendarBtn.addEventListener('click', calendarActions.exportCalendarData);
-            DOM.backToTimerBtn.addEventListener('click', () => {
-                DOM.calendarPage.classList.remove('show');
-            });
 
             // Dropdown menu events
             DOM.dropdownBtn.addEventListener('click', (e) => {
