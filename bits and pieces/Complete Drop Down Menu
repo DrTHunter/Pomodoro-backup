@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        /* Basic CSS */
+        .dropdown {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+        }
+        
+        .dropdown-btn {
+            padding: 10px 15px;
+            background: #673ab7;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .dropdown-items {
+            display: none;
+            position: absolute;
+            right: 0;
+            background: white;
+            min-width: 180px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .dropdown-items.show {
+            display: block;
+        }
+        
+        .item {
+            padding: 12px 15px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .item:hover {
+            background: #f5f5f5;
+        }
+        
+        /* Panel Styles */
+        .panel {
+            display: none;
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .panel.show {
+            display: block;
+        }
+        
+        /* Info Panel Specific */
+        .info-panel {
+            width: 300px;
+        }
+        
+        .info-panel h3 {
+            margin-top: 0;
+            color: #673ab7;
+        }
+        
+        .info-panel p {
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+        
+        /* Sounds Panel Specific */
+        .sounds-panel {
+            width: 250px;
+        }
+        
+        .sound-option {
+            padding: 8px 0;
+            cursor: pointer;
+        }
+        
+        .sound-option:hover {
+            color: #673ab7;
+        }
+        
+        .volume-control {
+            width: 100%;
+            margin-top: 15px;
+        }
+        
+        /* Music Panel Specific */
+        .music-panel {
+            width: 280px;
+        }
+        
+        .lofi-channel {
+            display: block;
+            padding: 10px;
+            margin: 8px 0;
+            background: #f8f8f8;
+            border-radius: 5px;
+            text-decoration: none;
+            color: #333;
+            transition: background 0.2s;
+        }
+        
+        .lofi-channel:hover {
+            background: #e9e9e9;
+        }
+        
+        .lofi-channel img {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+        
+        /* Rewards Panel Specific */
+        .rewards-panel {
+            width: 280px;
+            text-align: center;
+        }
+        
+        /* Donate Panel Specific */
+        .donate-panel {
+            width: 280px;
+            text-align: center;
+        }
+        
+        .donate-option {
+            display: block;
+            margin: 15px 0;
+            padding: 10px;
+            background: #f8f8f8;
+            border-radius: 5px;
+            text-decoration: none;
+            color: #333;
+            transition: background 0.2s;
+        }
+        
+        .donate-option:hover {
+            background: #e9e9e9;
+        }
+        
+        /* Close Button */
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Dropdown Menu -->
+<div class="dropdown">
+    <button class="dropdown-btn" id="menuBtn">☰ Menu</button>
+    <div class="dropdown-items" id="menuItems">
+        <div class="item" data-panel="info">ℹ️ Pomodoro Info</div>
+        <div class="item" data-panel="sounds">🎵 Background Sounds</div>
+        <div class="item" data-panel="music">🎧 LoFi Channels</div>
+        <div class="item" data-panel="rewards">🏆 Rewards</div>
+        <div class="item" data-panel="donate">☕ Support</div>
+    </div>
+</div>
+
+<!-- Info Panel -->
+<div class="panel info-panel" id="infoPanel">
+    <button class="close-btn" id="closeInfo">×</button>
+    <h3>Pomodoro Technique</h3>
+    <p>The Pomodoro Technique is a time management method developed by Francesco Cirillo.</p>
+    <p><strong>How it works:</strong></p>
+    <ol>
+        <li>Choose a task to focus on</li>
+        <li>Work for 25 minutes (one "Pomodoro")</li>
+        <li>Take a 5-minute break</li>
+        <li>After 4 Pomodoros, take a longer 30-minute break</li>
+    </ol>
+    <p>This technique helps maintain focus and prevent burnout.</p>
+</div>
+
+<!-- Sounds Panel -->
+<div class="panel sounds-panel" id="soundsPanel">
+    <button class="close-btn" id="closeSounds">×</button>
+    <h3>Background Sounds</h3>
+    
+    <div class="sound-option" data-sound="rain">🌧️ Rain</div>
+    <div class="sound-option" data-sound="forest">🌲 Forest</div>
+    <div class="sound-option" data-sound="waves">🌊 Ocean Waves</div>
+    <div class="sound-option" data-sound="coffee">☕ Coffee Shop</div>
+    
+    <input type="range" min="0" max="1" step="0.1" value="0.5" class="volume-control" id="volumeControl">
+    <div style="text-align: center;">Volume</div>
+</div>
+
+<!-- Music Panel -->
+<div class="panel music-panel" id="musicPanel">
+    <button class="close-btn" id="closeMusic">×</button>
+    <h3>Popular LoFi Channels</h3>
+    
+    <a href="https://www.youtube.com/watch?v=jfKfPfyJRdk" target="_blank" class="lofi-channel">
+        <img src="https://i.ytimg.com/vi/jfKfPfyJRdk/hqdefault.jpg" alt="LoFi Girl">
+        LoFi Girl
+    </a>
+    
+    <a href="https://www.youtube.com/watch?v=rUxyKA_-grg" target="_blank" class="lofi-channel">
+        <img src="https://i.ytimg.com/vi/rUxyKA_-grg/hqdefault.jpg" alt="Chillhop">
+        Chillhop Music
+    </a>
+    
+    <a href="https://www.youtube.com/watch?v=7NOSDKb0HlU" target="_blank" class="lofi-channel">
+        <img src="https://i.ytimg.com/vi/7NOSDKb0HlU/hqdefault.jpg" alt="Chill Cow">
+        Chill Cow
+    </a>
+    
+    <a href="https://www.youtube.com/watch?v=4xDzrJKXOOY" target="_blank" class="lofi-channel">
+        <img src="https://i.ytimg.com/vi/4xDzrJKXOOY/hqdefault.jpg" alt="Ambient Worlds">
+        Ambient Worlds
+    </a>
+</div>
+
+<!-- Rewards Panel -->
+<div class="panel rewards-panel" id="rewardsPanel">
+    <button class="close-btn" id="closeRewards">×</button>
+    <h3>Rewards</h3>
+    <p>Coming soon!</p>
+</div>
+
+<!-- Donate Panel -->
+<div class="panel donate-panel" id="donatePanel">
+    <button class="close-btn" id="closeDonate">×</button>
+    <h3>Support This Project</h3>
+    <p>Enjoying this Pomodoro timer? Buy me a coffee!</p>
+    
+    <a href="https://www.paypal.com/donate?business=YOUR_EMAIL&item_name=Pomodoro+Timer+Support" 
+       target="_blank" 
+       class="donate-option">
+       💳 PayPal
+    </a>
+    
+    <a href="https://ko-fi.com/YOUR_USERNAME" 
+       target="_blank" 
+       class="donate-option">
+       ☕ Ko-fi
+    </a>
+    
+    <a href="https://www.buymeacoffee.com/YOUR_USERNAME" 
+       target="_blank" 
+       class="donate-option">
+       🍵 Buy Me a Coffee
+    </a>
+</div>
+
+<!-- Audio Elements (hidden) -->
+<audio id="rainSound" loop src="https://assets.mixkit.co/sfx/preview/mixkit-rain-ambience-1193.mp3"></audio>
+<audio id="forestSound" loop src="https://assets.mixkit.co/sfx/preview/mixkit-forest-ambience-1683.mp3"></audio>
+<audio id="wavesSound" loop src="https://assets.mixkit.co/sfx/preview/mixkit-waves-coming-to-shore-1934.mp3"></audio>
+<audio id="coffeeSound" loop src="https://assets.mixkit.co/sfx/preview/mixkit-busy-coffee-shop-1655.mp3"></audio>
+
+<script>
+    // DOM Elements
+    const menuBtn = document.getElementById('menuBtn');
+    const menuItems = document.getElementById('menuItems');
+    const panels = {
+        info: document.getElementById('infoPanel'),
+        sounds: document.getElementById('soundsPanel'),
+        music: document.getElementById('musicPanel'),
+        rewards: document.getElementById('rewardsPanel'),
+        donate: document.getElementById('donatePanel')
+    };
+    
+    // Close buttons
+    const closeBtns = {
+        info: document.getElementById('closeInfo'),
+        sounds: document.getElementById('closeSounds'),
+        music: document.getElementById('closeMusic'),
+        rewards: document.getElementById('closeRewards'),
+        donate: document.getElementById('closeDonate')
+    };
+    
+    // Audio Elements
+    const sounds = {
+        rain: document.getElementById('rainSound'),
+        forest: document.getElementById('forestSound'),
+        waves: document.getElementById('wavesSound'),
+        coffee: document.getElementById('coffeeSound')
+    };
+    
+    let currentSound = null;
+    const volumeControl = document.getElementById('volumeControl');
+
+    // Toggle menu visibility
+    menuBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        menuItems.classList.toggle('show');
+    });
+    
+    // Close menu when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!menuBtn.contains(e.target) {
+            menuItems.classList.remove('show');
+        }
+    });
+    
+    // Handle menu item clicks
+    document.querySelectorAll('.item').forEach(item => {
+        item.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const panelName = item.getAttribute('data-panel');
+            
+            // Close all panels first
+            Object.values(panels).forEach(panel => {
+                panel.classList.remove('show');
+            });
+            
+            // Show selected panel
+            if (panels[panelName]) {
+                panels[panelName].classList.add('show');
+            }
+            
+            // Close the dropdown
+            menuItems.classList.remove('show');
+        });
+    });
+    
+    // Close panel buttons
+    Object.entries(closeBtns).forEach(([panelName, btn]) => {
+        btn.addEventListener('click', () => {
+            panels[panelName].classList.remove('show');
+        });
+    });
+    
+    // Close panels when clicking outside
+    document.addEventListener('click', (e) => {
+        Object.entries(panels).forEach(([panelName, panel]) => {
+            if (!panel.contains(e.target) && !Array.from(document.querySelectorAll('.item')).some(item => 
+                item.getAttribute('data-panel') === panelName && item.contains(e.target))) {
+                panel.classList.remove('show');
+            }
+        });
+    });
+    
+    // Sound selection
+    document.querySelectorAll('.sound-option').forEach(option => {
+        option.addEventListener('click', () => {
+            const soundType = option.getAttribute('data-sound');
+            
+            // Stop any currently playing sound
+            if (currentSound) {
+                currentSound.pause();
+                currentSound.currentTime = 0;
+            }
+            
+            // Play selected sound
+            currentSound = sounds[soundType];
+            currentSound.volume = volumeControl.value;
+            currentSound.play();
+        });
+    });
+    
+    // Volume control
+    volumeControl.addEventListener('input', () => {
+        const volume = volumeControl.value;
+        if (currentSound) {
+            currentSound.volume = volume;
+        }
+    });
+</script>
+
+</body>
+</html>
