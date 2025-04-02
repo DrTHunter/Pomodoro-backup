@@ -2402,7 +2402,7 @@
                 const panels = [DOM.infoPanel, DOM.noisePanel, DOM.lofiPanel, 
                                DOM.rewardsPanel, DOM.productivityPanel];
                 
-                if (!panels.some(panel => panel.contains(e.target)) {
+                if (!panels.some(panel => panel.contains(e.target))) {
                     panels.forEach(panel => panel.classList.remove('show'));
                 }
                 
